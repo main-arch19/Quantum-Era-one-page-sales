@@ -37,10 +37,44 @@ export const metadata: Metadata = {
   // search. Note: robots.txt must NOT block AdsBot-Google, or ads get
   // disapproved — see public/robots.txt.
   robots: { index: false, follow: false },
-  ...(PRIMARY_DOMAIN.includes("[")
-    ? {}
-    : { metadataBase: new URL(`https://${PRIMARY_DOMAIN}`) }),
+  ...metadataBaseOrNothing(),
 };
+
+/**
+ * metadataBase, or nothing at all — but never a thrown build.
+ *
+ * `new URL()` throws on a malformed host, and this runs at module scope, so a
+ * throw here surfaces as:
+ *
+ *     [Error: Failed to collect page data for /_not-found]
+ *
+ * naming a route that has nothing to do with the problem (/_not-found is
+ * simply the smallest page that pulls in this layout). That error cost four
+ * rounds of debugging once already.
+ *
+ * The bracket check alone is not enough. It covers the unfilled placeholder —
+ * `new URL("https://[PRIMARY-DOMAIN]")` really does throw, because `[` opens
+ * an IPv6 literal — but it stops applying the moment PRIMARY_DOMAIN is filled
+ * in, and a value with a space in it throws exactly the same way. A typo in a
+ * content file must never be able to fail a build, let alone blame the wrong
+ * route for it.
+ */
+function metadataBaseOrNothing(): { metadataBase?: URL } {
+  if (PRIMARY_DOMAIN.includes("[")) return {};
+
+  try {
+    return { metadataBase: new URL(`https://${PRIMARY_DOMAIN}`) };
+  } catch {
+    console.warn(
+      `\x1b[33m⚠ PRIMARY_DOMAIN is not a usable hostname: ${JSON.stringify(
+        PRIMARY_DOMAIN
+      )}\n` +
+        `  Expected a bare domain, e.g. "quantumerasolutions.com" — no scheme, no path.\n` +
+        `  Continuing without metadataBase; relative OG/canonical URLs will not resolve.\x1b[0m`
+    );
+    return {};
+  }
+}
 
 export const viewport: Viewport = {
   themeColor: "#0A0E52",

@@ -5,8 +5,7 @@
   "description": "Quantum Era Solutions — Google Ads landing page for the free website teardown",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-content.mts",
-    "build": "next build",
+    "build": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-content.mts && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "npm run test:prefill && npm run test:audit",

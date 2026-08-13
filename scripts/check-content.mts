@@ -35,7 +35,33 @@ import {
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
+const DIM = "\x1b[2m";
 const RESET = "\x1b[0m";
+
+/**
+ * Identifying line, printed before any pass/fail branch.
+ *
+ * This exists because four rounds of debugging were lost to one unanswerable
+ * question: WHICH COMMIT is the CI actually building? Vercel was replaying an
+ * old deployment, so every fix pushed to main was invisible to it, and an
+ * environment variable was being set for code that did not yet contain the
+ * flag that reads it.
+ *
+ * One line settles it. And because this line only exists from this commit
+ * onward, its ABSENCE from a build log is itself proof that something older is
+ * being built.
+ */
+const sha = (
+  process.env.VERCEL_GIT_COMMIT_SHA ??
+  process.env.GITHUB_SHA ??
+  "local"
+).slice(0, 7);
+
+console.log(
+  `${DIM}content check · commit ${sha} · ALLOW_PLACEHOLDER_BUILD=${
+    process.env.ALLOW_PLACEHOLDER_BUILD ?? "unset"
+  } · VERCEL_ENV=${process.env.VERCEL_ENV ?? "none"}${RESET}`
+);
 
 const unfilled = unfilledPlaceholders();
 
