@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — QES brand, mirroring the token names used in
+   the main website repo so the two codebases read as one system.
+
+   electric  #0E14F0  CTA ONLY. Appears three times on the page
+                      and always means "click here."
+   royal     #0A0AC0  CTA hover
+   navy      #0A0E52  headlines, dark sections
+   paper     #FAFAFA  page background
+   ink       #12121A  body copy
+   ink-deep  #05061C  darkest surface
+   line      #E5E7EB  borders
+   amber     #F5A524  THE COLOUR OF THE PROBLEM, and nothing
+                      else. Two permitted uses and no others:
+                      the unanswered notification card, and a
+                      failed line in the audit readout. Both
+                      are the same idea — an enquiry that went
+                      nowhere — so they share the colour. It
+                      never means "warning" in a UI sense and
+                      it is never decoration.
+   ============================================================ */
+@theme {
+  --color-electric: #0e14f0;
+  --color-royal: #0a0ac0;
+  --color-navy: #0a0e52;
+  --color-paper: #fafafa;
+  --color-ink: #12121a;
+  --color-ink-deep: #05061c;
+  --color-line: #e5e7eb;
+  --color-amber: #f5a524;
+
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Long copy. It must be effortless to read. */
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Room for the sticky mobile CTA bar so it never covers the footer. */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 4.75rem;
+  }
+}
+
+/* Anchor scrolling clears the header. */
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+::selection {
+  background: rgba(14, 20, 240, 0.14);
+}
+
+/* Tight tracking on display type at large sizes only. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.display-sm {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Timestamp eyebrows. Mono is what makes the time motif legible
+   as a system rather than decoration. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   MOTION — one keyframe, two uses.
+
+   card-arrive was built for the answered notification card and
+   is now also the audit readout's line reveal. Reusing the one
+   curve is the point: the readout lines and the answered card
+   are the same gesture — something arriving that was not there
+   a moment ago — and a second easing would read as a second
+   design. Nothing else on this page moves.
+   ============================================================ */
+@keyframes card-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-arrive {
+  animation: card-arrive 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ============================================================
+   ACCORDION — native <details>, no JS
+   ============================================================ */
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .accordion-icon {
+  transform: rotate(45deg);
+}
+
+/* ============================================================
+   MODAL — native <dialog>, focus trap and Esc for free
+   ============================================================ */
+dialog::backdrop {
+  background: rgba(5, 6, 28, 0.55);
+}
+dialog[open] {
+  animation: card-arrive 0.25s ease-out both;
+}
+
+/* ============================================================
+   REDUCED MOTION — both notification cards render immediately
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .card-arrive,
+  dialog[open] {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

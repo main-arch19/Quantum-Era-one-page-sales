@@ -1,0 +1,15 @@
+# This is an ad-only landing page. It is noindexed in page metadata so it does
+# not compete with the main site in organic search.
+#
+# CRITICAL: AdsBot-Google must NOT be blocked. Google Ads crawls the landing
+# page to assess landing page experience, and blocking AdsBot causes ad
+# disapproval — the ads simply stop serving.
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+User-agent: *
+Disallow:
