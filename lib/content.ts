@@ -471,7 +471,13 @@ export function placeholderReport(unfilled: string[]): string {
  *
  * What remains here is a dev-time nag that never blocks.
  */
-if (process.env.NODE_ENV !== "production") {
+// CONTENT_CHECK_RUNNING suppresses this when scripts/check-content.mts is the
+// caller — it prints the same report itself, and two copies of it in one build
+// log reads like a bug.
+if (
+  process.env.NODE_ENV !== "production" &&
+  !process.env.CONTENT_CHECK_RUNNING
+) {
   const unfilled = unfilledPlaceholders();
   if (unfilled.length > 0) {
     console.warn(

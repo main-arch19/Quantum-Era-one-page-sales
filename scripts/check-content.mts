@@ -27,11 +27,14 @@
  * drift from the content file itself.
  */
 
-import {
-  PLACEHOLDER_BUILD_ALLOWED,
-  placeholderReport,
-  unfilledPlaceholders,
-} from "../lib/content.ts";
+// Set BEFORE the module loads, hence the dynamic import: lib/content.ts prints
+// its own dev-time nag at module scope, which would otherwise duplicate the
+// whole report every time this script runs. Static imports are hoisted and
+// would execute before this assignment.
+process.env.CONTENT_CHECK_RUNNING = "1";
+
+const { PLACEHOLDER_BUILD_ALLOWED, placeholderReport, unfilledPlaceholders } =
+  await import("../lib/content.ts");
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
