@@ -376,6 +376,22 @@ export function unfilledPlaceholders(): string[] {
  * Turns "do not build with the brackets still in" into a build error rather
  * than a hope. Runs at module load; in dev it warns so you can keep working.
  */
+/**
+ * Deliberate escape hatch for deploying with placeholders still in.
+ *
+ * The guard below conflates two different things: BUILDING the page and RUNNING
+ * ADS against it. Only the second is actually forbidden. Standing up a preview
+ * to test the Supabase, Resend and Calendly wiring is legitimate work, and
+ * making that impossible pushes you toward the genuinely bad workaround —
+ * inventing a client result to get the build green.
+ *
+ * So: set ALLOW_PLACEHOLDER_BUILD=1 and the build proceeds. The unfilled banner
+ * then renders in production too, so a placeholder deploy is impossible to
+ * mistake for a finished one at a glance.
+ */
+export const PLACEHOLDER_BUILD_ALLOWED =
+  process.env.ALLOW_PLACEHOLDER_BUILD === "1";
+
 function assertNoPlaceholders(): void {
   const unfilled = unfilledPlaceholders();
   if (unfilled.length === 0) return;
@@ -385,9 +401,21 @@ function assertNoPlaceholders(): void {
     unfilled.map((key) => `  · ${key}`).join("\n") +
     `\n\nGoogle Ads prohibits unsubstantiated claims. Fill these before running ads.\n`;
 
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && !PLACEHOLDER_BUILD_ALLOWED) {
+    // Write to stderr BEFORE throwing. This throw happens at module load during
+    // Next's page-data collection, and Next re-wraps it — the [cause] carrying
+    // this message does not survive into most CI logs. Without this line a
+    // Vercel deploy fails with nothing but:
+    //     [Error: Failed to collect page data for /_not-found] { type: 'Error' }
+    // which is impossible to diagnose from the build log alone.
+    console.error(`\x1b[31mBUILD BLOCKED —${message}\x1b[0m`);
+    console.error(
+      "\x1b[31mTo deploy anyway — preview or staging only, never paid traffic —\n" +
+        "set ALLOW_PLACEHOLDER_BUILD=1 in the build environment.\x1b[0m\n"
+    );
     throw new Error(`BUILD BLOCKED —${message}`);
   }
+
   console.warn(`\x1b[33m⚠ CONTENT INCOMPLETE —${message}\x1b[0m`);
 }
 

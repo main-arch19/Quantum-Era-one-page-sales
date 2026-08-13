@@ -40,10 +40,11 @@ function Prose({ paragraphs }: { paragraphs: readonly string[] }) {
 }
 
 export default function LandingPage() {
-  // Dev-only banner. In production the build has already failed if anything
-  // is unfilled — see assertNoPlaceholders() in lib/content.ts.
-  const unfilled =
-    process.env.NODE_ENV === "production" ? [] : unfilledPlaceholders();
+  // Not dev-only. In a normal production build this is always empty, because
+  // assertNoPlaceholders() in lib/content.ts has already failed the build. It
+  // is non-empty only when someone deployed with ALLOW_PLACEHOLDER_BUILD=1 —
+  // exactly the case where the warning most needs to be on the page.
+  const unfilled = unfilledPlaceholders();
 
   return (
     <>
@@ -53,8 +54,7 @@ export default function LandingPage() {
         <div className="border-b-2 border-amber bg-amber/15 px-5 py-3 text-center sm:px-8">
           <p className="text-sm font-medium text-[#7a4700]">
             ⚠ {unfilled.length} placeholder{unfilled.length === 1 ? "" : "s"}{" "}
-            unfilled — this page cannot be built for production or run against
-            paid traffic yet.
+            unfilled — this page must not run against paid traffic yet.
           </p>
           <p className="mt-1 font-mono text-xs text-[#7a4700]/80">
             {unfilled.join(" · ")}
