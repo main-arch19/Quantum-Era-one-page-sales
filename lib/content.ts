@@ -373,17 +373,13 @@ export function unfilledPlaceholders(): string[] {
 }
 
 /**
- * Turns "do not build with the brackets still in" into a build error rather
- * than a hope. Runs at module load; in dev it warns so you can keep working.
- */
-/**
  * Deliberate escape hatch for deploying with placeholders still in.
  *
- * The guard below conflates two different things: BUILDING the page and RUNNING
- * ADS against it. Only the second is actually forbidden. Standing up a preview
- * to test the Supabase, Resend and Calendly wiring is legitimate work, and
- * making that impossible pushes you toward the genuinely bad workaround —
- * inventing a client result to get the build green.
+ * Enforcement conflates two different things: BUILDING the page and RUNNING ADS
+ * against it. Only the second is actually forbidden. Standing up a preview to
+ * test the Supabase, Resend and Calendly wiring is legitimate work, and making
+ * that impossible pushes you toward the genuinely bad workaround — inventing a
+ * client result to get the build green.
  *
  * So: set ALLOW_PLACEHOLDER_BUILD=1 and the build proceeds. The unfilled banner
  * then renders in production too, so a placeholder deploy is impossible to
@@ -392,31 +388,39 @@ export function unfilledPlaceholders(): string[] {
 export const PLACEHOLDER_BUILD_ALLOWED =
   process.env.ALLOW_PLACEHOLDER_BUILD === "1";
 
-function assertNoPlaceholders(): void {
-  const unfilled = unfilledPlaceholders();
-  if (unfilled.length === 0) return;
-
-  const message =
+/** The human-readable list. Shared so the message is identical everywhere. */
+export function placeholderReport(unfilled: string[]): string {
+  return (
     `\n${unfilled.length} placeholder(s) in lib/content.ts are still unfilled:\n` +
     unfilled.map((key) => `  · ${key}`).join("\n") +
-    `\n\nGoogle Ads prohibits unsubstantiated claims. Fill these before running ads.\n`;
-
-  if (process.env.NODE_ENV === "production" && !PLACEHOLDER_BUILD_ALLOWED) {
-    // Write to stderr BEFORE throwing. This throw happens at module load during
-    // Next's page-data collection, and Next re-wraps it — the [cause] carrying
-    // this message does not survive into most CI logs. Without this line a
-    // Vercel deploy fails with nothing but:
-    //     [Error: Failed to collect page data for /_not-found] { type: 'Error' }
-    // which is impossible to diagnose from the build log alone.
-    console.error(`\x1b[31mBUILD BLOCKED —${message}\x1b[0m`);
-    console.error(
-      "\x1b[31mTo deploy anyway — preview or staging only, never paid traffic —\n" +
-        "set ALLOW_PLACEHOLDER_BUILD=1 in the build environment.\x1b[0m\n"
-    );
-    throw new Error(`BUILD BLOCKED —${message}`);
-  }
-
-  console.warn(`\x1b[33m⚠ CONTENT INCOMPLETE —${message}\x1b[0m`);
+    `\n\nGoogle Ads prohibits unsubstantiated claims. Fill these before running ads.\n`
+  );
 }
 
-assertNoPlaceholders();
+/**
+ * NOTHING THROWS AT MODULE SCOPE HERE — deliberately.
+ *
+ * This used to call an assert that threw during a production build. The throw
+ * happened while Next collected page data, so Next caught and re-wrapped it,
+ * and the deploy failed with:
+ *
+ *     [Error: Failed to collect page data for /_not-found] { type: 'Error' }
+ *
+ * which names a route that has nothing to do with the problem — /_not-found is
+ * merely the first route that transitively imports this file. The real reason
+ * was buried in a [cause] twenty lines up, and Vercel summarises the last line.
+ *
+ * Enforcement now lives in scripts/check-content.mts, run by the `prebuild`
+ * npm script. It fails BEFORE Next starts, so the reason is the first and last
+ * thing in the log and cannot be re-wrapped by anything.
+ *
+ * What remains here is a dev-time nag that never blocks.
+ */
+if (process.env.NODE_ENV !== "production") {
+  const unfilled = unfilledPlaceholders();
+  if (unfilled.length > 0) {
+    console.warn(
+      `\x1b[33m⚠ CONTENT INCOMPLETE —${placeholderReport(unfilled)}\x1b[0m`
+    );
+  }
+}
