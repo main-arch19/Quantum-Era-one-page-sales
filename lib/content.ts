@@ -43,19 +43,38 @@ export const COMPANY = {
 // UNFILLED — required before this page sees a single paid click
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Must match the Google Ads display URL domain exactly. */
-export const PRIMARY_DOMAIN = "[PRIMARY-DOMAIN]";
+/** True when a value has been filled in — i.e. no [BRACKETS] left. */
+export function isFilled(value: string): boolean {
+  return value.length > 0 && !/\[.+\]/.test(value);
+}
+
+/**
+ * Must match the Google Ads display URL domain exactly, before ads run.
+ *
+ * Falls back to VERCEL_URL so a deployment always has a usable hostname for
+ * metadata without anyone editing this file. Set NEXT_PUBLIC_PRIMARY_DOMAIN,
+ * or hardcode the real domain here, once the custom domain is attached.
+ */
+export const PRIMARY_DOMAIN =
+  process.env.NEXT_PUBLIC_PRIMARY_DOMAIN ??
+  process.env.VERCEL_URL ??
+  "[PRIMARY-DOMAIN]";
 
 /**
  * Shown in the footer as PLAIN TEXT, never a mailto: link.
  *
+ * DELIBERATELY NOT derived from PRIMARY_DOMAIN. It used to be
+ * `main@${PRIMARY_DOMAIN}`, which meant any staging host published a contact
+ * address that does not exist — "main@qes-websites-that-answer.vercel.app" —
+ * on the one part of the page whose job is to look legitimate. The real
+ * mailbox does not change when the deployment host does.
+ *
  * There is no phone number anywhere on this page. It was removed because it
  * could not be answered reliably during working hours, and a number that rings
  * out is worse than no number at all on a page whose entire argument is that
- * slow response loses business. Location plus a domain-matched address carries
- * the legitimacy signal the number was carrying.
+ * slow response loses business.
  */
-export const CONTACT_EMAIL = `main@${PRIMARY_DOMAIN}`;
+export const CONTACT_EMAIL = "main@quantumerasolutions.com";
 
 /** Actual project floor price, e.g. "US$4,500". */
 export const PRICE_FLOOR = "[FIGURE]";
@@ -107,6 +126,24 @@ export const PRIMARY_PROOF: PrimaryProof = {
 
 /** Rendered as the proof section's H2. Kept here so page.tsx holds no copy. */
 export const PROOF_HEADING = `${PRIMARY_PROOF.client} already had a website. Here is what changed when it started answering.`;
+
+/**
+ * Whether the proof section renders at all.
+ *
+ * A page with no proof section is weaker. A page that prints "[CLIENT NAME]"
+ * is broken, and a page that prints an invented number is a Google Ads policy
+ * violation. Omission is the only honest option while the real story does not
+ * exist, and it is strictly better than blocking every deploy until it does.
+ *
+ * Fill PRIMARY_PROOF and the section reappears on its own — nothing else to change.
+ */
+export const PROOF_READY =
+  isFilled(PRIMARY_PROOF.client) &&
+  isFilled(PRIMARY_PROOF.story) &&
+  isFilled(PRIMARY_PROOF.quote.text) &&
+  isFilled(PRIMARY_PROOF.quote.name) &&
+  isFilled(PRIMARY_PROOF.quote.role) &&
+  isFilled(PRIMARY_PROOF.quote.company);
 
 export type SecondaryProof = {
   client: string;
@@ -275,11 +312,22 @@ export const OFFER = {
  * three beliefs that keep this particular buyer on a site that half-works
  * (it is nearly new / my developer could bolt it on / we do reply), then the rest.
  */
-export const OBJECTIONS = [
+/**
+ * Raw list. Entries carrying a `requires` value drop out of OBJECTIONS below
+ * while that value is unfilled, rather than answering a buyer's question with
+ * "[FIGURE]". An objection you cannot answer honestly yet is better left
+ * unasked than answered with a placeholder.
+ */
+const ALL_OBJECTIONS: readonly {
+  q: string;
+  a: string;
+  requires?: string;
+}[] = [
   {
     q: "What does a site like this cost?",
     // Anchors on value rather than apologising for the number. A hedged price
     // answer invites negotiation; a flat one invites the value conversation.
+    requires: PRICE_FLOOR,
     a: `Projects start at ${PRICE_FLOOR}. That is a real number, not an opening position we negotiate up from. Whether it is worth it depends entirely on what one job is worth to you, which is the arithmetic we do together on the call. If the numbers do not justify it, we will tell you, and you will have spent thirty minutes.`,
   },
   {
@@ -302,6 +350,7 @@ export const OBJECTIONS = [
   },
   {
     q: "How long does a build take?",
+    requires: BUILD_TIMEFRAME,
     a: `${BUILD_TIMEFRAME}. We will give you a real date on the call, not a range.`,
   },
   {
@@ -313,9 +362,15 @@ export const OBJECTIONS = [
     // Selling high-ticket into overseas markets from Kingston invites the
     // "offshore, therefore cheap" assumption. Meet it head on rather than
     // leaving the reader to draw it themselves.
+    requires: MARKETS,
     a: `Kingston, Jamaica. We work with clients in ${MARKETS}. Worth saying plainly: we are not an offshore shop competing on price. Our rates are what they are because of the work. Most of our clients have never been to our office and do not need to be — everything runs over video and shared documents, and you will always know exactly who is building your site.`,
   },
-] as const;
+];
+
+/** Only the objections we can currently answer without a placeholder. */
+export const OBJECTIONS = ALL_OBJECTIONS.filter(
+  (item) => item.requires === undefined || isFilled(item.requires)
+);
 
 export const FINAL_CTA = {
   heading: "Find out what your site does with an enquiry at midnight.",

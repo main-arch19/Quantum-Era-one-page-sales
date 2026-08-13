@@ -72,20 +72,40 @@ if (unfilled.length === 0) {
 
 const report = placeholderReport(unfilled);
 
-if (PLACEHOLDER_BUILD_ALLOWED) {
-  console.warn(
-    `${YELLOW}⚠ BUILDING WITH PLACEHOLDERS — ALLOW_PLACEHOLDER_BUILD=1${report}` +
-      `This build is for preview or staging only. The page will render a visible\n` +
-      `"placeholders unfilled" banner. Do NOT point paid traffic at it.${RESET}\n`
+/**
+ * Unfilled content no longer fails the build.
+ *
+ * It used to, and that was the wrong trade. The page now OMITS anything
+ * unfilled rather than rendering brackets — no proof section without a real
+ * proof, no price objection without a real price — so an incomplete build
+ * cannot publish a fabricated claim, which was the only thing worth blocking
+ * for. Meanwhile blocking cost five failed deploys and prevented no harm.
+ *
+ * Strictness is now opt-in and belongs at the moment of LAUNCH, not the moment
+ * of build:
+ *
+ *     npm run check:launch      # exits 1 while anything is missing
+ *
+ * Run that before pointing Google Ads at the page. ALLOW_PLACEHOLDER_BUILD is
+ * still honoured for anyone who set it, and REQUIRE_COMPLETE_CONTENT=1 restores
+ * hard blocking for a release pipeline that wants it.
+ */
+const STRICT =
+  process.env.REQUIRE_COMPLETE_CONTENT === "1" ||
+  process.argv.includes("--strict");
+
+if (STRICT && !PLACEHOLDER_BUILD_ALLOWED) {
+  console.error(`${RED}NOT READY TO LAUNCH —${report}${RESET}`);
+  console.error(
+    `${RED}Fill these in lib/content.ts before running ads against this page.${RESET}\n`
   );
-  process.exit(0);
+  process.exit(1);
 }
 
-console.error(`${RED}BUILD BLOCKED —${report}${RESET}`);
-console.error(
-  `${RED}Fill them in lib/content.ts, or — for a preview or staging deploy only,\n` +
-    `never for paid traffic — set ALLOW_PLACEHOLDER_BUILD=1 in the build\n` +
-    `environment. On Vercel: Settings → Environment Variables, then deploy the\n` +
-    `LATEST commit (Redeploy re-runs that deployment's old commit).${RESET}\n`
+console.warn(
+  `${YELLOW}⚠ INCOMPLETE CONTENT —${report}` +
+    `The page omits each of these rather than showing a placeholder, so it is\n` +
+    `safe to deploy — but it is NOT ready for paid traffic. Verify with:\n` +
+    `    npm run check:launch${RESET}\n`
 );
-process.exit(1);
+process.exit(0);

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-content.mts && next build",
+    "check:launch": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-content.mts --strict",
     "start": "next start",
     "lint": "next lint",
     "test": "npm run test:prefill && npm run test:audit",

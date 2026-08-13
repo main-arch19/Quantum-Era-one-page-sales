@@ -15,6 +15,7 @@ import {
   OFFER,
   FINAL_CTA,
   PRIMARY_PROOF,
+  PROOF_READY,
   PROOF_HEADING,
   SECONDARY_PROOFS,
   TRUST_LINE,
@@ -40,11 +41,12 @@ function Prose({ paragraphs }: { paragraphs: readonly string[] }) {
 }
 
 export default function LandingPage() {
-  // Not dev-only. In a normal production build this is always empty, because
-  // assertNoPlaceholders() in lib/content.ts has already failed the build. It
-  // is non-empty only when someone deployed with ALLOW_PLACEHOLDER_BUILD=1 —
-  // exactly the case where the warning most needs to be on the page.
-  const unfilled = unfilledPlaceholders();
+  // Dev-only. In production the page omits anything unfilled rather than
+  // showing it, so a live visitor never sees a bracket and does not need a
+  // warning bar explaining one. Launch-readiness is checked deliberately,
+  // before ads run, with `npm run check:launch`.
+  const unfilled =
+    process.env.NODE_ENV === "production" ? [] : unfilledPlaceholders();
 
   return (
     <>
@@ -136,23 +138,33 @@ export default function LandingPage() {
         <section className="border-t border-line bg-white px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <Eyebrow>Proof</Eyebrow>
-            <h2 className="display-sm mt-3 max-w-[24ch] text-[1.625rem] text-navy sm:text-[2.125rem]">
-              {PROOF_HEADING}
-            </h2>
 
-            <div className="mt-5 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
-              <p>{PRIMARY_PROOF.story}</p>
-            </div>
+            {/* The story, the number and the quote are omitted entirely until
+                PRIMARY_PROOF is real — a placeholder here would be a fabricated
+                claim, which Google Ads prohibits. The trust line below stays
+                either way: those three are real clients and naming them is a
+                statement of fact, not a performance claim. */}
+            {PROOF_READY && (
+              <>
+                <h2 className="display-sm mt-3 max-w-[24ch] text-[1.625rem] text-navy sm:text-[2.125rem]">
+                  {PROOF_HEADING}
+                </h2>
 
-            <blockquote className="mt-8 max-w-[38rem] border-l-2 border-electric pl-5">
-              <p className="display-sm text-[1.25rem] text-navy sm:text-[1.5rem]">
-                “{PRIMARY_PROOF.quote.text}”
-              </p>
-              <footer className="mt-3 text-[0.9375rem] text-ink/60">
-                — {PRIMARY_PROOF.quote.name}, {PRIMARY_PROOF.quote.role},{" "}
-                {PRIMARY_PROOF.quote.company}
-              </footer>
-            </blockquote>
+                <div className="mt-5 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+                  <p>{PRIMARY_PROOF.story}</p>
+                </div>
+
+                <blockquote className="mt-8 max-w-[38rem] border-l-2 border-electric pl-5">
+                  <p className="display-sm text-[1.25rem] text-navy sm:text-[1.5rem]">
+                    “{PRIMARY_PROOF.quote.text}”
+                  </p>
+                  <footer className="mt-3 text-[0.9375rem] text-ink/60">
+                    — {PRIMARY_PROOF.quote.name}, {PRIMARY_PROOF.quote.role},{" "}
+                    {PRIMARY_PROOF.quote.company}
+                  </footer>
+                </blockquote>
+              </>
+            )}
 
             {SECONDARY_PROOFS.length > 0 && (
               <ul className="mt-10 max-w-[38rem] divide-y divide-line border-y border-line">

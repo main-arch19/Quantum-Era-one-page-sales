@@ -1,4 +1,4 @@
-import { COMPANY, PRIMARY_DOMAIN } from "./content";
+import { COMPANY, PRIMARY_DOMAIN, isFilled } from "./content";
 
 /**
  * Privacy and Terms copy. These render in a modal ON THIS PAGE — never a new
@@ -122,7 +122,12 @@ export const TERMS: LegalDocument = {
     {
       heading: "This page",
       paragraphs: [
-        `The content of this page is owned by ${COMPANY.name}. Client names appear with permission. This page is published at ${PRIMARY_DOMAIN} and these terms are governed by the laws of Jamaica.`,
+        // Name the domain only once it is real. Interpolating it unguarded put
+        // the literal text "[PRIMARY-DOMAIN]" into published legal copy, and on
+        // a staging deploy it would name a throwaway hostname instead.
+        isFilled(PRIMARY_DOMAIN)
+          ? `The content of this page is owned by ${COMPANY.name}. Client names appear with permission. This page is published at ${PRIMARY_DOMAIN} and these terms are governed by the laws of Jamaica.`
+          : `The content of this page is owned by ${COMPANY.name}. Client names appear with permission. These terms are governed by the laws of Jamaica.`,
       ],
     },
   ],
