@@ -13,10 +13,16 @@ import { NOTIFICATION_CARDS } from "@/lib/content";
  * IS the product demonstration. Nothing else on this page moves.
  */
 
+/**
+ * amber-ink, not amber, for the TEXT. #F5A524 on white measures 2.04:1 —
+ * it failed WCAG at any size, and it was failing on the single line that
+ * carries this page's argument, above the fold. #9A5B00 is 5.43:1 and is
+ * the same hue. The swatch itself survives on the dot below.
+ */
 function Stamp({ time, tone }: { time: string; tone: "amber" | "electric" }) {
   return (
     <span
-      className={`eyebrow ${tone === "amber" ? "text-amber" : "text-electric"}`}
+      className={`eyebrow ${tone === "amber" ? "text-amber-ink" : "text-electric"}`}
     >
       {time}
     </span>
@@ -31,26 +37,26 @@ export function UnansweredCard({ className = "" }: { className?: string }) {
       className={`rounded-xl border border-line bg-white p-5 shadow-[0_1px_3px_rgba(5,6,28,0.06),0_18px_40px_-20px_rgba(5,6,28,0.25)] ${className}`}
     >
       <div className="flex items-center justify-between gap-4">
-        <span className="text-[0.8125rem] font-medium text-ink/55">
-          {card.source}
-        </span>
+        <span className="text-sm font-medium text-ink/65">{card.source}</span>
         <Stamp time={card.stamp} tone="amber" />
       </div>
 
       {/* Mono, not display type. This is the string they typed into the search
           box — set as a headline it just reads as a broken sentence. */}
-      <p className="mt-3 font-mono text-[0.9375rem] leading-snug text-navy">
+      <p className="mt-3 font-mono text-base leading-snug text-navy">
         {card.title}
       </p>
       <p className="mt-2 text-sm leading-relaxed text-ink/70">{card.body}</p>
 
       <div className="mt-4 flex items-center gap-2 border-t border-line pt-3">
-        {/* The single use of Signal Amber on the page. It is the colour of the problem. */}
+        {/* The only place the Signal Amber swatch itself appears. It is the
+            colour of the problem, and as a decorative dot beside its own
+            label it carries no contrast requirement. */}
         <span
           aria-hidden="true"
           className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber"
         />
-        <span className="text-[0.8125rem] font-medium text-amber">
+        <span className="text-sm font-medium text-amber-ink">
           {card.status}
         </span>
       </div>
@@ -64,13 +70,11 @@ function AnsweredCard() {
   return (
     <div className="rounded-xl border border-electric/25 bg-white p-5 shadow-[0_1px_3px_rgba(5,6,28,0.06),0_18px_40px_-20px_rgba(14,20,240,0.35)]">
       <div className="flex items-center justify-between gap-4">
-        <span className="text-[0.8125rem] font-medium text-ink/55">
-          {card.source}
-        </span>
+        <span className="text-sm font-medium text-ink/65">{card.source}</span>
         <Stamp time={card.stamp} tone="electric" />
       </div>
 
-      <p className="mt-3 font-display text-[0.9375rem] font-bold leading-snug text-navy">
+      <p className="mt-3 font-display text-base font-bold leading-snug text-navy">
         {card.title}
       </p>
       <p className="mt-2 text-sm leading-relaxed text-ink/70">{card.body}</p>
@@ -80,7 +84,7 @@ function AnsweredCard() {
           aria-hidden="true"
           className="h-1.5 w-1.5 shrink-0 rounded-full bg-electric"
         />
-        <span className="text-[0.8125rem] font-medium text-electric">
+        <span className="text-sm font-medium text-electric">
           {card.status}
         </span>
       </div>
@@ -133,7 +137,7 @@ export function NotificationExchange() {
     <div ref={containerRef} className="mx-auto max-w-md space-y-3">
       <UnansweredCard />
 
-      <div className="flex justify-center py-0.5">
+      <div className="flex justify-center py-1">
         <span
           aria-hidden="true"
           className={`h-6 w-px bg-line transition-opacity duration-500 ${
@@ -150,7 +154,7 @@ export function NotificationExchange() {
       </div>
 
       {/* This pair only ever sits on the navy mechanism band. */}
-      <p className="pt-1 text-center text-sm text-white/55">
+      <p className="pt-1 text-center text-sm text-white/70">
         {NOTIFICATION_CARDS.caption}
       </p>
     </div>

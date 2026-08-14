@@ -67,7 +67,7 @@ export function StickyBar({ targetId }: { targetId: string }) {
         type="button"
         onClick={scrollToForm}
         tabIndex={visible ? 0 : -1}
-        className="w-full rounded-lg bg-electric px-6 py-3.5 font-display text-[0.9375rem] font-bold text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
+        className="w-full rounded-lg bg-electric px-6 py-4 font-display text-base font-bold text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
       >
         {ENQUIRY_COPY.button}
       </button>

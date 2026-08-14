@@ -40,12 +40,8 @@ export function EnquiryForm({ formId }: { formId: string }) {
       noValidate
       className="rounded-xl border border-line bg-white p-5 sm:p-6"
     >
-      <h3 className="display-sm text-lg text-navy sm:text-xl">
-        {ENQUIRY_COPY.heading}
-      </h3>
-      <p className="mt-1.5 text-[0.9375rem] text-ink/70">
-        {ENQUIRY_COPY.subheading}
-      </p>
+      <h3 className="display-sm text-lead text-navy">{ENQUIRY_COPY.heading}</h3>
+      <p className="mt-2 text-sm text-ink/70">{ENQUIRY_COPY.subheading}</p>
 
       <div className="mt-5 space-y-4">
         {ENQUIRY_FIELDS.map((field) => {
@@ -71,7 +67,10 @@ export function EnquiryForm({ formId }: { formId: string }) {
                 [name]: validate(name, event.target.value),
               }));
             },
-            className: `mt-1.5 w-full rounded-lg border bg-white px-3.5 py-3 text-base text-ink outline-none transition-colors placeholder:text-ink/35 focus:border-navy ${
+            // The focus ring matches every button on the page: 2px Electric at
+            // 2px offset. A 1px border colour change was the weakest focus
+            // indicator here and the only one that was not visible at a glance.
+            className: `mt-2 w-full rounded-lg border bg-white px-4 py-3 text-base text-ink outline-none transition-colors placeholder:text-ink/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric ${
               error ? "border-amber" : "border-line"
             }`,
           };
@@ -84,7 +83,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
               >
                 {field.label}
                 {!field.required && (
-                  <span className="ml-1.5 font-normal text-ink/45">
+                  <span className="ml-2 font-normal text-ink/60">
                     (optional)
                   </span>
                 )}
@@ -100,7 +99,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
                 <p
                   id={errorId}
                   role="alert"
-                  className="mt-1.5 text-sm text-[#9a5b00]"
+                  className="mt-2 text-sm text-amber-ink"
                 >
                   {error}
                 </p>
@@ -119,7 +118,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
       {state.formError && (
         <p
           role="alert"
-          className="mt-4 rounded-lg border border-amber bg-amber/10 px-3.5 py-3 text-sm text-[#9a5b00]"
+          className="mt-4 rounded-lg border border-amber bg-amber/10 px-4 py-3 text-sm text-amber-ink"
         >
           {state.formError}
         </p>
@@ -129,7 +128,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
         <SubmitButton />
       </div>
 
-      <p className="mt-3 text-center text-[0.8125rem] text-ink/55">
+      <p className="mt-3 text-center text-sm text-ink/65">
         {ENQUIRY_COPY.consent}
       </p>
     </form>

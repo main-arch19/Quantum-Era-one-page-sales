@@ -168,7 +168,7 @@ export function CalendlyEmbed({
 function CalendlyFallback() {
   return (
     <div className="rounded-xl border border-line bg-white p-6 text-center">
-      <p className="text-[1.0625rem] leading-relaxed text-ink/80">
+      <p className="text-body leading-relaxed text-ink/80">
         The scheduler could not load — that is on us, not you. We already have
         your details and your report, and we will email you to fix a time.
         Nothing further is needed from you.

@@ -53,21 +53,21 @@ export default async function BookedPage({
       <main className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
         <p className="eyebrow text-electric/70">Enquiry received</p>
 
-        <h1 className="display mt-3 max-w-[20ch] text-[2rem] text-navy sm:text-[2.75rem]">
+        <h1 className="display mt-3 max-w-[20ch] text-h1 text-navy">
           {firstName ? `Thanks, ${firstName}.` : "Thanks — we have it."}
         </h1>
 
-        <p className="mt-5 max-w-[38rem] text-lg text-ink/75">
+        <p className="mt-5 max-w-[38rem] text-lead text-ink/75">
           Your enquiry is with us and a real person is reading it, not a filter.
           We will come back to you by email either way.
         </p>
 
         <div className="mt-14 border-t border-line pt-10">
           <p className="eyebrow text-electric/70">30 minutes · No cost</p>
-          <h2 className="display-sm mt-3 max-w-[24ch] text-[1.625rem] text-navy sm:text-[2.125rem]">
+          <h2 className="display-sm mt-3 max-w-[24ch] text-h2 text-navy">
             Want to skip the back and forth? Pick a time now.
           </h2>
-          <p className="mt-5 max-w-[38rem] text-[1.0625rem] text-ink/70">
+          <p className="mt-5 max-w-[38rem] text-body text-ink/70">
             Thirty minutes on a call is worth a week of emails. We will go
             through what you want built, what it takes, and what it costs — with
             a real figure and a real date. No pitch. You keep the plan either
@@ -87,10 +87,10 @@ export default async function BookedPage({
             />
           ) : (
             <div className="rounded-xl border-2 border-dashed border-amber bg-amber/10 p-6">
-              <p className="font-display text-[0.9375rem] font-bold text-[#7a4700]">
+              <p className="font-display text-base font-bold text-[#7a4700]">
                 Scheduler not configured
               </p>
-              <p className="mt-2 text-[0.9375rem] text-[#7a4700]/85">
+              <p className="mt-2 text-base text-[#7a4700]/85">
                 Set <code className="font-mono">NEXT_PUBLIC_CALENDLY_URL</code>{" "}
                 to your event link. Until then this page cannot book anyone —
                 enquiries still arrive by email, but you will be scheduling them
@@ -102,10 +102,10 @@ export default async function BookedPage({
       </main>
 
       <footer className="px-5 py-10 text-center sm:px-8">
-        <p className="text-sm text-ink/45">
+        <p className="text-sm text-ink/60">
           © {COMPANY.year} {COMPANY.name} · {COMPANY.location}
         </p>
-        <p className="mt-1 font-mono text-sm text-ink/35">{CONTACT_EMAIL}</p>
+        <p className="mt-1 font-mono text-sm text-ink/60">{CONTACT_EMAIL}</p>
       </footer>
     </>
   );

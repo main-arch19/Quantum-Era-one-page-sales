@@ -4,8 +4,15 @@
    DESIGN TOKENS — QES brand, mirroring the token names used in
    the main website repo so the two codebases read as one system.
 
-   electric  #0E14F0  CTA ONLY. Appears three times on the page
-                      and always means "click here."
+   electric  #0E14F0  TWO meanings, and they are the same meaning.
+                      1. Every CTA on the page (four buttons).
+                      2. The ANSWERED state — the second notification
+                         card's stamp, status and dot, plus the section
+                         eyebrows at 70%.
+                      Amber is the enquiry that died; Electric is the
+                      one that got answered, and the button you press
+                      to stop it happening again. Anything else on the
+                      page that turns this colour is a defect.
    royal     #0A0AC0  CTA hover
    navy      #0A0E52  headlines, dark sections
    paper     #FAFAFA  page background
@@ -13,13 +20,16 @@
    ink-deep  #05061C  darkest surface
    line      #E5E7EB  borders
    amber     #F5A524  THE COLOUR OF THE PROBLEM, and nothing
-                      else. Two permitted uses and no others:
-                      the unanswered notification card, and a
-                      failed line in the audit readout. Both
-                      are the same idea — an enquiry that went
-                      nowhere — so they share the colour. It
-                      never means "warning" in a UI sense and
-                      it is never decoration.
+                      else. One permitted use: the unanswered
+                      notification card. It never means
+                      "warning" in a UI sense and it is never
+                      decoration.
+   amber-ink #9A5B00  Amber, made readable. #F5A524 on white is
+                      2.04:1 and fails WCAG at any body size,
+                      so amber TEXT is set in this instead —
+                      5.43:1, same hue, same meaning. The
+                      swatch stays #F5A524 for dots and fills,
+                      where the 3:1 non-text threshold applies.
    ============================================================ */
 @theme {
   --color-electric: #0e14f0;
@@ -30,10 +40,52 @@
   --color-ink-deep: #05061c;
   --color-line: #e5e7eb;
   --color-amber: #f5a524;
+  --color-amber-ink: #9a5b00;
 
   --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* ----------------------------------------------------------
+     TYPE SCALE — seven sizes. Not eight.
+
+     Every font-size on this page comes from one of these. The
+     fluid ones are still ONE size at any given viewport: they
+     interpolate between the mobile and desktop ends of the
+     scale rather than adding a third value in the middle. The
+     page previously rendered TWELVE distinct sizes, mostly in
+     near-identical pairs (17 vs 18, 14 vs 15, 34 vs 40), which
+     reads as inconsistency rather than as hierarchy.
+
+     micro  12      mono indices, eyebrows, step numbers
+     sm     14      captions, footer, consent, card meta
+     base   16      inputs, buttons, card body
+     body   17→18   ALL long copy
+     lead   20→24   hero subhead, card headings, pull quotes
+     h2     26→34   every section heading, without exception
+     h1     34→56   the hero, and nothing else
+     ---------------------------------------------------------- */
+  --text-micro: 0.75rem;
+  --text-body: 1.0625rem;
+  --text-lead: clamp(1.25rem, 1.05rem + 0.55vw, 1.5rem);
+  --text-h2: clamp(1.625rem, 1.3rem + 1vw, 2.125rem);
+  --text-h1: clamp(2.125rem, 1.4rem + 3.6vw, 3.5rem);
+
+  /* ----------------------------------------------------------
+     GUTTER — one value for all three two-column grids. They
+     previously used gap-14, gap-16 and gap-14, which is the
+     kind of difference nobody can name and everybody feels.
+     ---------------------------------------------------------- */
+  --spacing-gutter: 3.5rem;
+}
+
+/* Body copy is the one size that steps rather than interpolating:
+   a reading measure wants a settled size, not a moving one. Declared
+   outside @theme so it overrides the layered theme value. */
+@media (min-width: 40rem) {
+  :root {
+    --text-body: 1.125rem;
+  }
 }
 
 /* ============================================================
@@ -92,20 +144,18 @@ body {
 .eyebrow {
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 0.8125rem;
+  font-size: var(--text-micro);
   letter-spacing: 0.14em;
   font-variant-numeric: tabular-nums;
 }
 
 /* ============================================================
-   MOTION — one keyframe, two uses.
+   MOTION — one keyframe.
 
-   card-arrive was built for the answered notification card and
-   is now also the audit readout's line reveal. Reusing the one
-   curve is the point: the readout lines and the answered card
-   are the same gesture — something arriving that was not there
-   a moment ago — and a second easing would read as a second
-   design. Nothing else on this page moves.
+   card-arrive belongs to the answered notification card, and
+   the modal borrows it at a shorter duration. That is every
+   moving thing on this page. Zero elements animate at load; the
+   card fires only when the mechanism band scrolls into view.
    ============================================================ */
 @keyframes card-arrive {
   from {

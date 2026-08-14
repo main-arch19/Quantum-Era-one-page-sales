@@ -38,10 +38,15 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="eyebrow text-electric/70">{children}</p>;
 }
 
-/** Shared measure for long copy. Comfortable line length is not decoration. */
+/**
+ * Long copy. The measure lives on the section wrapper, not here — nesting a
+ * 38rem block inside a centred 48rem one left every paragraph with 160px of
+ * dead space to its right and pushed the whole column off the optical centre
+ * while the headings above it looked centred.
+ */
 function Prose({ paragraphs }: { paragraphs: readonly string[] }) {
   return (
-    <div className="mt-5 max-w-[38rem] space-y-5 text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+    <div className="mt-5 space-y-5 text-body text-ink/80">
       {paragraphs.map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}
@@ -67,7 +72,7 @@ export default function LandingPage() {
             ⚠ {unfilled.length} placeholder{unfilled.length === 1 ? "" : "s"}{" "}
             unfilled — this page must not run against paid traffic yet.
           </p>
-          <p className="mt-1 font-mono text-xs text-[#7a4700]/80">
+          <p className="mt-1 font-mono text-micro text-[#7a4700]/80">
             {unfilled.join(" · ")}
           </p>
         </div>
@@ -76,64 +81,85 @@ export default function LandingPage() {
       <main>
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <section className="bg-paper px-5 pb-14 pt-12 sm:px-8 sm:pb-20 sm:pt-16">
-          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+          {/* items-center, like the mechanism band below. The left column runs
+              short of the form beside it, and pinned to the top it left a
+              250px empty rectangle bottom-left — the first thing on the page,
+              reading as a column that ran out of content. */}
+          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-gutter">
             <div>
-              <h1 className="display max-w-[15ch] text-[2.125rem] text-navy sm:text-[3rem] lg:text-[3.5rem]">
+              <h1 className="display max-w-[15ch] text-h1 text-navy">
                 {HERO.h1}
               </h1>
-              <p className="mt-5 max-w-[34rem] text-lg text-ink/75 sm:text-xl">
+              <p className="mt-5 max-w-[34rem] text-lead text-ink/75">
                 {HERO.subhead}
               </p>
 
               {/* The signature element, cold open: one card, sitting inert. */}
-              <div className="mt-9 max-w-md">
+              <div className="mt-10 max-w-md">
                 <UnansweredCard />
               </div>
             </div>
 
-            {/* On mobile the check moves below the hero copy. */}
-            <div className="lg:pt-2">
-              <EnquiryForm formId="enquiry" />
+            {/* On mobile the form moves below the hero copy. */}
+            <div>
+              <EnquiryForm formId="enquiry-hero" />
             </div>
           </div>
         </section>
 
-        {/* ── 11:47 PM / 11:48 PM / 7:15 AM ─────────────────────────────── */}
-        {NARRATIVE_SECTIONS.map((section, index) => (
-          <section
-            key={section.id}
-            id={section.id}
-            className={`px-5 py-14 sm:px-8 sm:py-20 ${
-              index % 2 === 0 ? "bg-white" : "bg-paper"
-            } border-t border-line`}
-          >
-            {/* Centred at a reading measure rather than left-aligned in a
-                max-w-6xl container. These are three screens of continuous
-                prose; pinned left, the right half of a desktop viewport sat
-                empty and read as an unfinished layout rather than restraint. */}
-            <div className="mx-auto max-w-3xl">
-              <Eyebrow>{section.eyebrow}</Eyebrow>
-              <h2 className="display-sm mt-3 max-w-[20ch] text-[1.625rem] text-navy sm:text-[2.125rem]">
-                {section.heading}
-              </h2>
-              <Prose paragraphs={section.body} />
-            </div>
-          </section>
-        ))}
+        {/* ── 11:47 PM / 11:48 PM / 7:15 AM / 11:47 PM × 52 ─────────────── */}
+        {NARRATIVE_SECTIONS.map((section, index) => {
+          // The first three are one night, told in order. The fourth
+          // multiplies that night by a year and is the turn in the argument —
+          // it gets the louder heading treatment and the rule above it. The
+          // white/paper alternation this replaced differed by 1% luminance:
+          // four screens of prose that were paying for a rhythm device and
+          // receiving nothing for it.
+          const isTurn = index === NARRATIVE_SECTIONS.length - 1;
+
+          return (
+            <section
+              key={section.id}
+              id={section.id}
+              className={`border-t border-line px-5 py-14 sm:px-8 sm:py-20 ${
+                isTurn ? "bg-white" : "bg-paper"
+              }`}
+            >
+              {/* One container owns the measure. */}
+              <div className="mx-auto max-w-[38rem]">
+                {isTurn && (
+                  <span
+                    aria-hidden="true"
+                    className="mb-6 block h-px w-16 bg-navy"
+                  />
+                )}
+                <Eyebrow>{section.eyebrow}</Eyebrow>
+                <h2
+                  className={`mt-3 max-w-[20ch] text-h2 text-navy ${
+                    isTurn ? "display" : "display-sm"
+                  }`}
+                >
+                  {section.heading}
+                </h2>
+                <Prose paragraphs={section.body} />
+              </div>
+            </section>
+          );
+        })}
 
         {/* ── THE MECHANISM ─────────────────────────────────────────────── */}
         <section className="border-t border-line bg-navy px-5 py-14 sm:px-8 sm:py-20">
           {/* items-center keeps the cards beside the middle of the argument
               rather than pinned to the top with a void of navy beneath them. */}
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-16">
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-gutter">
             <div>
               <Eyebrow>
-                <span className="text-white/45">What we build</span>
+                <span className="text-white/60">What we build</span>
               </Eyebrow>
-              <h2 className="display-sm mt-3 max-w-[18ch] text-[1.625rem] text-white sm:text-[2.125rem]">
+              <h2 className="display-sm mt-3 max-w-[18ch] text-h2 text-white">
                 {MECHANISM.heading}
               </h2>
-              <div className="mt-5 max-w-[38rem] space-y-5 text-[1.0625rem] text-white/75 sm:text-[1.125rem]">
+              <div className="mt-5 max-w-[38rem] space-y-5 text-body text-white/75">
                 {MECHANISM.body.map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
@@ -159,19 +185,19 @@ export default function LandingPage() {
                 statement of fact, not a performance claim. */}
             {PROOF_READY && (
               <>
-                <h2 className="display-sm mt-3 max-w-[24ch] text-[1.625rem] text-navy sm:text-[2.125rem]">
+                <h2 className="display-sm mt-3 max-w-[24ch] text-h2 text-navy">
                   {PROOF_HEADING}
                 </h2>
 
-                <div className="mt-5 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+                <div className="mt-5 max-w-[38rem] text-body text-ink/80">
                   <p>{PRIMARY_PROOF.story}</p>
                 </div>
 
                 <blockquote className="mt-8 max-w-[38rem] border-l-2 border-electric pl-5">
-                  <p className="display-sm text-[1.25rem] text-navy sm:text-[1.5rem]">
+                  <p className="display-sm text-lead text-navy">
                     “{PRIMARY_PROOF.quote.text}”
                   </p>
-                  <footer className="mt-3 text-[0.9375rem] text-ink/60">
+                  <footer className="mt-3 text-sm text-ink/60">
                     — {PRIMARY_PROOF.quote.name}, {PRIMARY_PROOF.quote.role},{" "}
                     {PRIMARY_PROOF.quote.company}
                   </footer>
@@ -186,10 +212,10 @@ export default function LandingPage() {
                     key={proof.client}
                     className="flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:gap-4"
                   >
-                    <span className="font-display text-[0.9375rem] font-bold text-navy sm:w-32 sm:shrink-0">
+                    <span className="font-display text-sm font-bold text-navy sm:w-32 sm:shrink-0">
                       {proof.client}
                     </span>
-                    <span className="text-[1.0625rem] text-ink/80">
+                    <span className="text-body text-ink/80">
                       {proof.result}
                     </span>
                   </li>
@@ -212,8 +238,8 @@ export default function LandingPage() {
                   key={client}
                   className={
                     PROOF_READY
-                      ? "font-mono text-sm text-ink/50"
-                      : "display-sm text-[1.25rem] text-navy/80 sm:text-[1.5rem]"
+                      ? "font-mono text-sm text-ink/65"
+                      : "display-sm text-lead text-navy/80"
                   }
                 >
                   {client}
@@ -227,10 +253,10 @@ export default function LandingPage() {
         <section className="border-t border-line bg-paper px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <Eyebrow>30 minutes · No cost</Eyebrow>
-            <h2 className="display-sm mt-3 text-[1.625rem] text-navy sm:text-[2.125rem]">
+            <h2 className="display-sm mt-3 text-h2 text-navy">
               {OFFER.heading}
             </h2>
-            <p className="mt-5 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+            <p className="mt-5 max-w-[38rem] text-body text-ink/80">
               {OFFER.intro}
             </p>
 
@@ -241,20 +267,20 @@ export default function LandingPage() {
               {OFFER.steps.map((step, index) => {
                 const Icon = OFFER_ICONS[step.icon];
                 return (
-                  <li key={step.label} className="bg-paper p-6 sm:p-7">
+                  <li key={step.label} className="bg-paper p-6 sm:p-8">
                     <div className="flex items-center gap-3">
                       {/* Navy, never Electric — that is the CTA's colour. */}
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy/[0.07] text-navy">
                         <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
                       </span>
-                      <span className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink/40">
+                      <span className="font-mono text-micro uppercase tracking-[0.18em] text-ink/65">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <h3 className="display-sm mt-4 text-[1.0625rem] text-navy">
+                    <h3 className="display-sm mt-4 text-lead text-navy">
                       {step.label}
                     </h3>
-                    <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink/70">
+                    <p className="mt-2 text-base leading-relaxed text-ink/70">
                       {step.body}
                     </p>
                   </li>
@@ -262,11 +288,11 @@ export default function LandingPage() {
               })}
             </ol>
 
-            <p className="mt-8 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+            <p className="mt-8 max-w-[38rem] text-body text-ink/80">
               {OFFER.closer}
             </p>
 
-            <div className="mt-9">
+            <div className="mt-10">
               <ScrollToFormButton targetId={FINAL_FORM_ID} />
             </div>
           </div>
@@ -276,7 +302,7 @@ export default function LandingPage() {
         <section className="border-t border-line bg-white px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <Eyebrow>Before you book</Eyebrow>
-            <h2 className="display-sm mb-8 mt-3 text-[1.625rem] text-navy sm:text-[2.125rem]">
+            <h2 className="display-sm mb-8 mt-3 text-h2 text-navy">
               The questions people ask us first
             </h2>
             <Objections />
@@ -288,21 +314,21 @@ export default function LandingPage() {
           id="book"
           className="border-t border-line bg-navy px-5 py-14 sm:px-8 sm:py-20"
         >
-          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
-            <div className="lg:pt-4">
-              <h2 className="display max-w-[16ch] text-[1.875rem] text-white sm:text-[2.5rem]">
+          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-gutter">
+            <div>
+              <h2 className="display max-w-[16ch] text-h2 text-white">
                 {FINAL_CTA.heading}
               </h2>
-              <p className="mt-5 max-w-[32rem] text-lg text-white/70">
+              <p className="mt-5 max-w-[32rem] text-lead text-white/70">
                 {FINAL_CTA.subhead}
               </p>
             </div>
 
-            {/* The second check is the same component, not a dark variant of
-                it. The readout is a diagnostic and has to read identically
-                wherever it appears — a terminal that changes colour with the
-                band it sits on stops looking like an instrument. */}
-            <div className="rounded-2xl bg-paper/95 p-4 sm:p-5">
+            {/* The second form is the same component, not a dark variant of
+                it. It has to read identically wherever it appears — a control
+                that changes colour with the band it sits on stops looking
+                like the same control. */}
+            <div className="rounded-xl bg-paper/95 p-4 sm:p-5">
               <EnquiryForm formId={FINAL_FORM_ID} />
             </div>
           </div>

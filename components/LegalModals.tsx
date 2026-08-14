@@ -56,17 +56,17 @@ function LegalDialog({
         <div>
           <h2
             id={`${doc.id}-title`}
-            className="display-sm text-lg text-navy"
+            className="display-sm text-lead text-navy"
           >
             {doc.title}
           </h2>
-          <p className="eyebrow mt-1 text-ink/45">Updated {doc.updated}</p>
+          <p className="eyebrow mt-1 text-ink/60">Updated {doc.updated}</p>
         </div>
         <button
           type="button"
           onClick={onClose}
           aria-label={`Close ${doc.title}`}
-          className="shrink-0 rounded-md p-1.5 text-ink/50 transition-colors hover:bg-paper hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
+          className="shrink-0 rounded-lg p-3 text-ink/65 transition-colors hover:bg-paper hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
         >
           <svg
             width="20"
@@ -88,11 +88,11 @@ function LegalDialog({
       <div className="max-h-[65vh] overflow-y-auto px-6 py-5">
         {doc.sections.map((section) => (
           <section key={section.heading} className="mb-6 last:mb-0">
-            <h3 className="font-display text-[0.9375rem] font-bold text-navy">
+            <h3 className="font-display text-base font-bold text-navy">
               {section.heading}
             </h3>
             {section.paragraphs.map((paragraph, index) => (
-              <p key={index} className="mt-2 text-[0.9375rem] text-ink/75">
+              <p key={index} className="mt-2 text-base text-ink/75">
                 {paragraph}
               </p>
             ))}
@@ -111,17 +111,17 @@ export function LegalModals() {
       <button
         type="button"
         onClick={() => setOpenDoc(PRIVACY_POLICY.id)}
-        className="underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+        className="-my-3 inline-flex min-w-11 justify-center py-3 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
       >
-        {PRIVACY_POLICY.title}
+        <span className="underline underline-offset-4">{PRIVACY_POLICY.title}</span>
       </button>
       <span aria-hidden="true">·</span>
       <button
         type="button"
         onClick={() => setOpenDoc(TERMS.id)}
-        className="underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+        className="-my-3 inline-flex min-w-11 justify-center py-3 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
       >
-        {TERMS.title}
+        <span className="underline underline-offset-4">{TERMS.title}</span>
       </button>
 
       <LegalDialog
