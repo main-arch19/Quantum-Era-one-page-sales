@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Objections } from "@/components/Objections";
-import { SiteCheck } from "@/components/SiteCheck";
+import { EnquiryForm } from "@/components/EnquiryForm";
 import { StickyBar } from "@/components/StickyBar";
 import { ScrollToFormButton } from "@/components/ScrollToFormButton";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/lib/content";
 
 /** The check the sticky bar and the offer CTA scroll to. */
-const FINAL_FORM_ID = "site-check-final";
+const FINAL_FORM_ID = "enquiry-final";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="eyebrow text-electric/70">{children}</p>;
@@ -84,7 +84,7 @@ export default function LandingPage() {
 
             {/* On mobile the check moves below the hero copy. */}
             <div className="lg:pt-2">
-              <SiteCheck formId="site-check" />
+              <EnquiryForm formId="enquiry" />
             </div>
           </div>
         </section>
@@ -237,7 +237,7 @@ export default function LandingPage() {
                 wherever it appears — a terminal that changes colour with the
                 band it sits on stops looking like an instrument. */}
             <div className="rounded-2xl bg-paper/95 p-4 sm:p-5">
-              <SiteCheck formId={FINAL_FORM_ID} />
+              <EnquiryForm formId={FINAL_FORM_ID} />
             </div>
           </div>
         </section>

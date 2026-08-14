@@ -9,14 +9,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { COMPANY } from "@/lib/content";
 import { TRACKED_PARAMS } from "@/lib/tracking";
 import { getSupabase } from "@/lib/supabase";
-import {
-  AuditFailedError,
-  GATED_CHECK_COUNT,
-  runFreeAudit,
-  runFullAudit,
-} from "@/lib/audit/run";
-import type { AuditResponse, AuditResult } from "@/lib/audit/types";
-import type { GateFormState } from "@/lib/form-state";
+import type { EnquiryFormState } from "@/lib/form-state";
 
 /** A submit arriving faster than this was not typed by a human. */
 const MIN_FILL_MS = 3000;
@@ -46,76 +39,12 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE 1 — the audit. No personal data, no email, no database row.
-// ─────────────────────────────────────────────────────────────────────────────
-
 /**
- * Runs the free half of the audit and hands back two findings.
- *
- * Rate limited on its own budget, separately from the gate: this endpoint makes
- * an outbound request to a URL the caller chooses, which is the most abusable
- * thing on the page. The limit is deliberately tighter than the form's.
+ * Every message names what is wrong AND how to fix it. Never
+ * "Something went wrong" — a visitor who cannot tell what to correct is a
+ * visitor who leaves, and you already paid for them.
  */
-export async function runAuditAction(
-  _prevState: AuditResponse | null,
-  formData: FormData
-): Promise<AuditResponse> {
-  const headerList = await headers();
-
-  // Honeypot — fails silently as a plausible-looking error rather than
-  // announcing that we spotted it.
-  const honeypot = formData.get("company_website");
-  if (typeof honeypot === "string" && honeypot.trim() !== "") {
-    return { ok: false, message: "We could not reach that address. Check it and try again." };
-  }
-
-  const limit = checkRateLimit(`audit:${clientIp(headerList)}`);
-  if (!limit.allowed) {
-    const minutes = Math.ceil(limit.retryAfterSeconds / 60);
-    return {
-      ok: false,
-      message: `You have run a few of these in a row. Give it ${minutes} minute${minutes === 1 ? "" : "s"} and try again.`,
-    };
-  }
-
-  const raw = formData.get("url");
-  if (typeof raw !== "string" || !raw.trim()) {
-    return { ok: false, message: "Please enter your website address." };
-  }
-
-  try {
-    const { fetched, free } = await runFreeAudit(raw);
-    return {
-      ok: true,
-      finalUrl: fetched.finalUrl.toString(),
-      free,
-      lockedCount: GATED_CHECK_COUNT,
-      ranAt: new Date().toISOString(),
-    };
-  } catch (error) {
-    if (error instanceof AuditFailedError) {
-      return { ok: false, message: error.message };
-    }
-    console.error("[audit] unexpected failure", error);
-    return {
-      ok: false,
-      message:
-        "Something went wrong at our end running that check — not at yours. Try again in a moment.",
-    };
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE 2 — the email gate. This is the conversion.
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Error messages name the problem and the fix. Never a generic
- * "Something went wrong" — a visitor who cannot tell what to correct
- * is a visitor who leaves, and you already paid for them.
- */
-const gateSchema = z.object({
+const enquirySchema = z.object({
   name: z
     .string()
     .trim()
@@ -125,25 +54,43 @@ const gateSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, "We need an email address to send the report to.")
+    .min(1, "We need an email address to reply to.")
     .max(200, "That email address is longer than we can store.")
     .email(
       "That email address is missing something — check for a typo around the @ sign."
     ),
 
-  company: z
+  // Optional on purpose. Most people fill it without being made to, so
+  // requiring it only loses the privacy-cautious for no extra information.
+  phone: z
     .string()
     .trim()
-    .min(2, "We need your company name — it goes on the report.")
-    .max(120, "That name is longer than we can store — please shorten it."),
+    .max(40, "That number is longer than we can store — digits only is fine.")
+    .optional()
+    .or(z.literal("")),
 
-  url: z.string().trim().min(1, "We seem to have lost your website address — please start again."),
+  // The qualifying field. A real answer is what makes the lead worth calling.
+  description: z
+    .string()
+    .trim()
+    .min(
+      15,
+      "A little more detail, please — a sentence or two about what you want the site to do."
+    )
+    .max(4000, "That is longer than we can store — please trim it a little."),
 });
 
-export async function submitGate(
-  _prevState: GateFormState,
+/**
+ * The whole lead capture. One stage, four fields.
+ *
+ * Replaced a two-stage flow (audit the visitor's URL, then gate the findings
+ * behind an email). The audit modules are still in the tree and still tested;
+ * nothing here calls them.
+ */
+export async function submitEnquiry(
+  _prevState: EnquiryFormState,
   formData: FormData
-): Promise<GateFormState> {
+): Promise<EnquiryFormState> {
   const headerList = await headers();
 
   // ── Spam gates ────────────────────────────────────────────────────────────
@@ -159,27 +106,29 @@ export async function submitGate(
   }
 
   // ── Rate limit ────────────────────────────────────────────────────────────
-  const limit = checkRateLimit(`gate:${clientIp(headerList)}`);
+  const limit = checkRateLimit(`enquiry:${clientIp(headerList)}`);
   if (!limit.allowed) {
     const minutes = Math.ceil(limit.retryAfterSeconds / 60);
     return {
       ok: false,
-      formError: `That request has already been sent. If it did not come through, wait ${minutes} minute${minutes === 1 ? "" : "s"} and try again — or email ${COMPANY.email} and we will send your report by hand.`,
+      formError: `That enquiry has already been sent. If it did not come through, wait ${minutes} minute${minutes === 1 ? "" : "s"} and try again — or email ${COMPANY.email} and we will pick it up by hand.`,
     };
   }
 
   // ── Validate ──────────────────────────────────────────────────────────────
-  const parsed = gateSchema.safeParse({
+  const parsed = enquirySchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
-    company: formData.get("company"),
-    url: formData.get("url"),
+    phone: formData.get("phone"),
+    description: formData.get("description"),
   });
 
   if (!parsed.success) {
-    const fieldErrors: GateFormState["fieldErrors"] = {};
+    const fieldErrors: EnquiryFormState["fieldErrors"] = {};
     for (const issue of parsed.error.issues) {
-      const field = issue.path[0] as keyof NonNullable<GateFormState["fieldErrors"]>;
+      const field = issue.path[0] as keyof NonNullable<
+        EnquiryFormState["fieldErrors"]
+      >;
       if (field && !fieldErrors[field]) fieldErrors[field] = issue.message;
     }
     return { ok: false, fieldErrors };
@@ -188,22 +137,9 @@ export async function submitGate(
   const lead = {
     name: parsed.data.name,
     email: parsed.data.email,
-    company: parsed.data.company,
+    phone: parsed.data.phone?.trim() ?? "",
+    description: parsed.data.description,
   };
-
-  // ── Re-run the audit server-side ──────────────────────────────────────────
-  // The URL arrives from a form field the visitor can edit, so it is re-checked
-  // and re-fetched rather than trusted. This also means the emailed report is
-  // always about a site we actually looked at, not one we were told about.
-  let audit: AuditResult | null = null;
-  try {
-    audit = await runFullAudit(parsed.data.url);
-  } catch (error) {
-    // The site went down between stage 1 and stage 2, or the visitor edited the
-    // hidden field into something unreachable. Neither is worth losing the lead
-    // over — capture them and say so honestly.
-    console.warn("[gate] full audit failed, continuing with lead capture", error);
-  }
 
   const leadId = randomUUID();
   const tracking = collectTrackingParams(formData);
@@ -217,23 +153,22 @@ export async function submitGate(
       id: leadId,
       name: lead.name,
       email: lead.email,
-      company: lead.company,
-      website_url: audit?.finalUrl ?? parsed.data.url,
-      audit,
+      phone: lead.phone || null,
+      project_description: lead.description,
       utm: Object.keys(tracking).length ? tracking : null,
       // booked_at stays NULL. Calendly's webhook sets it.
     });
 
     if (error) {
-      console.error("[gate] supabase insert failed — lead follows", error);
-      console.error(JSON.stringify({ leadId, ...lead, url: parsed.data.url }));
+      console.error("[enquiry] supabase insert failed — lead follows", error);
+      console.error(JSON.stringify({ leadId, ...lead }));
     }
   } else {
-    console.warn("[gate] Supabase not configured — lead not persisted:", leadId);
+    console.warn("[enquiry] Supabase not configured — not persisted:", leadId);
   }
 
   // ── Deliver ───────────────────────────────────────────────────────────────
-  const message = buildReportEmail(lead, audit, tracking, leadId, parsed.data.url);
+  const message = buildEnquiryEmail(lead, tracking, leadId);
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.LEAD_TO_EMAIL ?? COMPANY.email;
   const from = process.env.LEAD_FROM_EMAIL ?? "leads@quantumerasolutions.com";
@@ -241,7 +176,10 @@ export async function submitGate(
   if (!apiKey) {
     // No key configured (local dev). Log rather than lose the lead, and let
     // the visitor through — their time is not worth our misconfiguration.
-    console.warn("[gate] RESEND_API_KEY not set — not emailed:\n", message.text);
+    console.warn(
+      "[enquiry] RESEND_API_KEY not set — not emailed:\n",
+      message.text
+    );
     redirect(`/booked?lid=${leadId}`);
   }
 
@@ -259,11 +197,11 @@ export async function submitGate(
   } catch (error) {
     // Never lose a paid lead to a mail outage. The row is already in Supabase;
     // log the full payload too so it is recoverable either way.
-    console.error("[gate] send failed — lead payload follows", error);
+    console.error("[enquiry] send failed — lead payload follows", error);
     console.error(message.text);
     return {
       ok: false,
-      formError: `We could not send that just now — this is our problem, not yours. Please email ${COMPANY.email} and we will send your report straight over.`,
+      formError: `We could not send that just now — this is our problem, not yours. Please email ${COMPANY.email} and we will pick it up straight away.`,
     };
   }
 
@@ -274,55 +212,39 @@ export async function submitGate(
 // The internal notification. Goes to us, not to the lead.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function buildReportEmail(
-  lead: { name: string; email: string; company: string },
-  audit: AuditResult | null,
+function buildEnquiryEmail(
+  lead: { name: string; email: string; phone: string; description: string },
   tracking: Record<string, string>,
-  leadId: string,
-  requestedUrl: string
+  leadId: string
 ): { subject: string; html: string; text: string } {
   const rows: [string, string][] = [
     ["Name", lead.name],
     ["Email", lead.email],
-    ["Company", lead.company],
-    ["Website", audit?.finalUrl ?? requestedUrl],
+    ["Phone", lead.phone || "— not given"],
   ];
 
-  const findings = audit ? [...audit.free, ...audit.gated] : [];
   const trackingRows = Object.entries(tracking);
 
   const text = [
-    "NEW REPORT REQUEST",
+    "NEW ENQUIRY",
     "",
     ...rows.map(([label, value]) => `${label}: ${value}`),
     "",
-    "AUDIT",
-    findings.length
-      ? findings
-          .map(
-            (f) =>
-              `[${f.verdict.toUpperCase().padEnd(7)}] ${f.label} — ${f.value}\n            ${f.detail}`
-          )
-          .join("\n")
-      : "Audit did not complete — run it manually before the call.",
+    "WHAT THEY WANT BUILT",
+    lead.description,
     "",
     trackingRows.length
-      ? ["Campaign source", ...trackingRows.map(([k, v]) => `${k}: ${v}`)].join("\n")
+      ? ["Campaign source", ...trackingRows.map(([k, v]) => `${k}: ${v}`)].join(
+          "\n"
+        )
       : "Campaign source: none captured (direct visit)",
     "",
     `Lead ID: ${leadId}`,
   ].join("\n");
 
-  const verdictColour: Record<string, string> = {
-    fail: "#B45309",
-    warn: "#B45309",
-    pass: "#0E14F0",
-    unknown: "#9ca3af",
-  };
-
   const html = `
     <div style="font-family:ui-sans-serif,system-ui,sans-serif;color:#12121A;max-width:640px">
-      <h2 style="font-size:18px;color:#0A0E52;margin:0 0 16px">New report request</h2>
+      <h2 style="font-size:18px;color:#0A0E52;margin:0 0 16px">New enquiry</h2>
       <table style="border-collapse:collapse;width:100%;font-size:14px">
         ${rows
           .map(
@@ -335,45 +257,32 @@ function buildReportEmail(
           .join("")}
       </table>
 
-      <h3 style="font-size:13px;color:#6b7280;margin:24px 0 8px;text-transform:uppercase;letter-spacing:.08em">Audit</h3>
-      ${
-        findings.length
-          ? findings
-              .map(
-                (f) => `
-        <div style="border-left:3px solid ${verdictColour[f.verdict] ?? "#9ca3af"};padding:4px 0 4px 12px;margin:0 0 12px">
-          <div style="font-family:ui-monospace,monospace;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.08em">
-            ${escapeHtml(f.label)} — ${escapeHtml(f.value)}
-          </div>
-          <div style="font-size:14px;margin-top:2px">${escapeHtml(f.detail)}</div>
-        </div>`
-              )
-              .join("")
-          : `<p style="font-size:14px;color:#B45309;margin:0">Audit did not complete — run it manually before the call.</p>`
-      }
+      <h3 style="font-size:14px;color:#0A0E52;margin:24px 0 8px">What they want built</h3>
+      <p style="font-size:14px;line-height:1.6;white-space:pre-wrap;margin:0;padding:12px;background:#FAFAFA;border-left:2px solid #0E14F0">${escapeHtml(
+        lead.description
+      )}</p>
 
-      <h3 style="font-size:13px;color:#6b7280;margin:24px 0 8px;text-transform:uppercase;letter-spacing:.08em">Campaign source</h3>
+      <h3 style="font-size:14px;color:#0A0E52;margin:24px 0 8px">Campaign source</h3>
       ${
         trackingRows.length
-          ? `<table style="border-collapse:collapse;width:100%;font-size:13px">
-              ${trackingRows
-                .map(
-                  ([k, v]) => `
-                <tr>
-                  <td style="padding:4px 12px 4px 0;color:#6b7280;font-family:ui-monospace,monospace">${escapeHtml(k)}</td>
-                  <td style="padding:4px 0;font-family:ui-monospace,monospace">${escapeHtml(v)}</td>
-                </tr>`
-                )
-                .join("")}
-            </table>`
-          : `<p style="font-size:13px;color:#6b7280;margin:0">None captured — direct visit.</p>`
+          ? `<table style="border-collapse:collapse;font-size:13px">${trackingRows
+              .map(
+                ([k, v]) => `
+          <tr>
+            <td style="padding:4px 12px 4px 0;color:#6b7280">${escapeHtml(k)}</td>
+            <td style="padding:4px 0">${escapeHtml(v)}</td>
+          </tr>`
+              )
+              .join("")}</table>`
+          : `<p style="font-size:13px;color:#6b7280;margin:0">None captured (direct visit)</p>`
       }
-      <p style="font-size:12px;color:#9ca3af;margin:24px 0 0">Lead ID ${escapeHtml(leadId)}</p>
+
+      <p style="font-size:12px;color:#9ca3af;margin:24px 0 0">Lead ID: ${escapeHtml(leadId)}</p>
     </div>
-  `;
+  `.trim();
 
   return {
-    subject: `Report request — ${lead.name} (${lead.company})`,
+    subject: `New enquiry — ${lead.name}`,
     html,
     text,
   };

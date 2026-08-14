@@ -53,3 +53,25 @@ create index if not exists leads_email_idx on public.leads (email);
 -- which bypasses RLS. Enabling it with no policies therefore costs nothing and
 -- means an accidentally-leaked anon key still reads nothing.
 alter table public.leads enable row level security;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- MIGRATION — enquiry form replaces the URL audit.
+--
+-- RUN THIS against an existing project. The table was created when the page
+-- captured a website URL and a company name and required both; the enquiry
+-- form collects neither, so without these four statements EVERY submission
+-- fails at insert on a not-null violation and the lead is lost.
+--
+-- Idempotent: safe to run more than once.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+alter table public.leads alter column company     drop not null;
+alter table public.leads alter column website_url drop not null;
+
+-- Optional on the form, so nullable here.
+alter table public.leads add column if not exists phone text;
+
+-- Required on the form. Left nullable in the database on purpose: rows written
+-- before this change have no description, and a not-null column would refuse
+-- to be added to a table that already has rows.
+alter table public.leads add column if not exists project_description text;

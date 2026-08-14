@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import type { Finding, Verdict } from "@/lib/audit/types";
-import { AUDIT_COPY, GATE_COPY } from "@/lib/content";
+import { AUDIT_COPY } from "@/lib/content";
+
+/** Was GATE_COPY.lockedLabel, which retired with the two-stage form. */
+const LOCKED_LABEL = "Locked";
 
 /**
  * The audit readout.
@@ -86,7 +89,7 @@ function LockedLine({ index }: { index: number }) {
         <span className="font-mono text-sm text-ink/25">·</span>
         <span className="h-2.5 w-24 rounded-full bg-ink/10" />
         <span className="ml-auto font-mono text-[0.8125rem] uppercase tracking-[0.1em] text-ink/30">
-          {GATE_COPY.lockedLabel}
+          {LOCKED_LABEL}
         </span>
       </div>
       <div className="mt-2.5 pl-[1.6rem]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { HERO_FORM_COPY } from "@/lib/content";
+import { ENQUIRY_COPY } from "@/lib/content";
 import { scrollToNextStep } from "@/lib/scroll-target";
 
 /**
@@ -18,7 +18,7 @@ export function ScrollToFormButton({ targetId }: { targetId: string }) {
       onClick={() => scrollToNextStep(targetId)}
       className="inline-block rounded-lg bg-electric px-7 py-4 font-display text-base font-bold tracking-[-0.01em] text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
     >
-      {HERO_FORM_COPY.button}
+      {ENQUIRY_COPY.button}
     </button>
   );
 }

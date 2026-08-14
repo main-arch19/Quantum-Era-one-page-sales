@@ -1,24 +1,19 @@
 /**
- * Form state shared by the server actions and the form components.
+ * Form state shared by the server action and the form component.
  *
  * This lives outside app/actions.ts deliberately: a "use server" file may only
- * export async functions, so the initial-state constants cannot live beside the
- * actions they belong to.
+ * export async functions, so the initial-state constant cannot live beside the
+ * action it belongs to.
  */
 
-/**
- * Stage 2 only. Stage 1 has a single field and its own response type
- * (AuditResponse), because what comes back from it is an audit rather than a
- * form result.
- */
-export type GateFieldName = "name" | "email" | "company" | "url";
+export type EnquiryFieldName = "name" | "email" | "phone" | "description";
 
-export type GateFormState = {
+export type EnquiryFormState = {
   ok: boolean;
   /** Field-level errors, keyed by input name. */
-  fieldErrors?: Partial<Record<GateFieldName, string>>;
+  fieldErrors?: Partial<Record<EnquiryFieldName, string>>;
   /** Whole-form error. Always says what went wrong AND how to fix it. */
   formError?: string;
 };
 
-export const EMPTY_GATE_STATE: GateFormState = { ok: false };
+export const EMPTY_ENQUIRY_STATE: EnquiryFormState = { ok: false };

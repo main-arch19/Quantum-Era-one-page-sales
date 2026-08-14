@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { HERO_FORM_COPY } from "@/lib/content";
+import { ENQUIRY_COPY } from "@/lib/content";
 import { trackScroll75 } from "@/lib/tracking";
 import { scrollToNextStep } from "@/lib/scroll-target";
 
@@ -69,7 +69,7 @@ export function StickyBar({ targetId }: { targetId: string }) {
         tabIndex={visible ? 0 : -1}
         className="w-full rounded-lg bg-electric px-6 py-3.5 font-display text-[0.9375rem] font-bold text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
       >
-        {HERO_FORM_COPY.button}
+        {ENQUIRY_COPY.button}
       </button>
     </div>
   );

@@ -41,14 +41,14 @@ declare global {
 export function CalendlyEmbed({
   url,
   leadId,
-  websiteUrl,
+  description,
   name,
   email,
   utm,
 }: {
   url: string;
   leadId: string;
-  websiteUrl: string;
+  description: string;
   name: string;
   email: string;
   utm: Record<string, string>;
@@ -90,9 +90,13 @@ export function CalendlyEmbed({
     // ═════════════════════════════════════════════════════════════════════
     // ⚠  CUSTOM QUESTION ORDER ON THE CALENDLY EVENT TYPE.
     //
-    //    a1  Lead ID                            (hidden)
-    //    a2  Website URL                        (hidden)
-    //    a3  What do you want the site to do?   (REQUIRED)
+    //    a1  Lead ID              (hidden)
+    //    a2  What you want built  (hidden, prefilled from the form)
+    //
+    //    The old a2 was Website URL and a3 was a REQUIRED "what do you want
+    //    the site to do?" question. The form now asks that itself, so the
+    //    Calendly-side question must be DELETED — leaving it asks the same
+    //    person the same thing twice.
     //
     //    a1/a2/a3 map POSITIONALLY to the custom questions as they are
     //    ordered on the event type. Reorder or insert a question in the
@@ -115,7 +119,7 @@ export function CalendlyEmbed({
         email,
         customAnswers: {
           a1: leadId,
-          a2: websiteUrl,
+          a2: description,
         },
       },
       // An object, not URL params — nothing to encode wrongly.
@@ -127,7 +131,7 @@ export function CalendlyEmbed({
         utmTerm: utm.utm_term,
       },
     });
-  }, [url, leadId, websiteUrl, name, email, utm]);
+  }, [url, leadId, description, name, email, utm]);
 
   // The script may already be cached and executed from a previous mount, in
   // which case onReady never fires again.

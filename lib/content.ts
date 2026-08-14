@@ -173,41 +173,69 @@ export const HERO = {
 } as const;
 
 /**
- * STAGE 1 — the hero. ONE field, and it is the URL.
+ * THE ENQUIRY FORM. One stage, four fields.
  *
- * No email, no name, nothing else. A project-description textarea in front of
- * an uncommitted visitor is the single most expensive field on the internet.
- * Everything we need to start, we can get from the domain they type.
+ * This replaced a two-stage flow that ran a live audit on the visitor's URL
+ * and gated the findings behind an email. That traded a lower barrier for a
+ * longer path; this trades a higher barrier for a lead that arrives complete
+ * and callable.
+ *
+ * The description is the expensive field — a free-text box in front of an
+ * uncommitted visitor is the costliest thing you can ask for. It is required
+ * anyway, because it is what makes the lead worth calling and it filters
+ * anyone who was never going to show up. Phone is optional for the opposite
+ * reason: most people fill it without prompting, so making it mandatory only
+ * loses you the privacy-cautious.
  */
-export const HERO_FORM_COPY = {
-  heading: "Check what your site does with an enquiry",
+export const ENQUIRY_COPY = {
+  heading: "Tell us what you want built",
   subheading:
-    "Type your address. We run the same checks a buyer's patience runs, and show you the first two findings straight away.",
-  label: "Your website",
-  placeholder: "yourbusiness.com",
-  button: "Check my site",
-  subLabel: "No email needed to start.",
-  running: "Checking…",
+    "Four questions, one minute. We read every one of these ourselves and come back with a real answer, not an auto-reply.",
+  button: "Send my enquiry",
+  sending: "Sending…",
+  consent:
+    "We'll reply by email and may follow up about your project. Unsubscribe any time.",
 } as const;
 
 /**
- * STAGE 2 — the email gate, shown AFTER two real findings are on screen.
- *
- * The same three fields cost almost nothing here and would have cost most of
- * the conversions in the hero. They have seen something true about their own
- * site by this point; the email is a trade, not a toll.
+ * Field order is deliberate: identity first, contact second, and the field
+ * that takes actual thought last, once they are already committed.
  */
-export const GATE_COPY = {
-  heading: "The rest of the report",
-  subheading:
-    "Five more checks, including how your site performs on a phone on mobile data — which is how most of your enquiries arrive.",
-  button: "Send me the full report",
-  sending: "Sending…",
-  consent:
-    "We'll email you the report and may follow up about it. Unsubscribe any time.",
-  /** Sits over the blurred, un-run checks. */
-  lockedLabel: "Locked",
-} as const;
+export const ENQUIRY_FIELDS = [
+  {
+    name: "name",
+    label: "Your name",
+    type: "text",
+    autoComplete: "name",
+    placeholder: "Marcia Bennett",
+    required: true,
+  },
+  {
+    name: "email",
+    label: "Work email",
+    type: "email",
+    autoComplete: "email",
+    placeholder: "you@yourbusiness.com",
+    required: true,
+  },
+  {
+    name: "phone",
+    label: "Phone / WhatsApp",
+    type: "tel",
+    autoComplete: "tel",
+    placeholder: "Optional",
+    required: false,
+  },
+  {
+    name: "description",
+    label: "What you want built",
+    type: "textarea",
+    autoComplete: "off",
+    placeholder:
+      "A few lines is plenty — what the business does, and what you want the site to do for it.",
+    required: true,
+  },
+] as const;
 
 /**
  * The terminal readout. Static framing only — the per-check verdicts live in
