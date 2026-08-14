@@ -1,3 +1,4 @@
+import { Inbox, Map, Search, Smartphone } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Objections } from "@/components/Objections";
@@ -24,6 +25,14 @@ import {
 
 /** The check the sticky bar and the offer CTA scroll to. */
 const FINAL_FORM_ID = "enquiry-final";
+
+/** Named in lib/content.ts so the copy file stays free of imports. */
+const OFFER_ICONS = {
+  smartphone: Smartphone,
+  inbox: Inbox,
+  search: Search,
+  map: Map,
+} as const;
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="eyebrow text-electric/70">{children}</p>;
@@ -98,7 +107,11 @@ export default function LandingPage() {
               index % 2 === 0 ? "bg-white" : "bg-paper"
             } border-t border-line`}
           >
-            <div className="mx-auto max-w-6xl">
+            {/* Centred at a reading measure rather than left-aligned in a
+                max-w-6xl container. These are three screens of continuous
+                prose; pinned left, the right half of a desktop viewport sat
+                empty and read as an unfinished layout rather than restraint. */}
+            <div className="mx-auto max-w-3xl">
               <Eyebrow>{section.eyebrow}</Eyebrow>
               <h2 className="display-sm mt-3 max-w-[20ch] text-[1.625rem] text-navy sm:text-[2.125rem]">
                 {section.heading}
@@ -184,10 +197,29 @@ export default function LandingPage() {
               </ul>
             )}
 
-            {/* Plain text. Not links, not linked logos. */}
-            <p className="mt-10 font-mono text-sm text-ink/50">
-              {TRUST_LINE.join(" · ")}
-            </p>
+            {/* Plain text. Not links, not linked logos.
+                Carries the whole section while PROOF_READY is false, so it is
+                set with real presence rather than as a mono footnote — a
+                full-width band holding one grey line read as a broken section
+                rather than a deliberately quiet one. */}
+            <ul
+              className={`flex flex-wrap items-baseline gap-x-8 gap-y-3 ${
+                PROOF_READY ? "mt-10 border-t border-line pt-8" : "mt-6"
+              }`}
+            >
+              {TRUST_LINE.map((client) => (
+                <li
+                  key={client}
+                  className={
+                    PROOF_READY
+                      ? "font-mono text-sm text-ink/50"
+                      : "display-sm text-[1.25rem] text-navy/80 sm:text-[1.5rem]"
+                  }
+                >
+                  {client}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -198,7 +230,41 @@ export default function LandingPage() {
             <h2 className="display-sm mt-3 text-[1.625rem] text-navy sm:text-[2.125rem]">
               {OFFER.heading}
             </h2>
-            <Prose paragraphs={OFFER.body} />
+            <p className="mt-5 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+              {OFFER.intro}
+            </p>
+
+            {/* Two columns on desktop. The prose measure alone left half the
+                viewport empty here, which read as an unfinished layout rather
+                than as restraint. */}
+            <ol className="mt-10 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
+              {OFFER.steps.map((step, index) => {
+                const Icon = OFFER_ICONS[step.icon];
+                return (
+                  <li key={step.label} className="bg-paper p-6 sm:p-7">
+                    <div className="flex items-center gap-3">
+                      {/* Navy, never Electric — that is the CTA's colour. */}
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy/[0.07] text-navy">
+                        <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                      </span>
+                      <span className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink/40">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <h3 className="display-sm mt-4 text-[1.0625rem] text-navy">
+                      {step.label}
+                    </h3>
+                    <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink/70">
+                      {step.body}
+                    </p>
+                  </li>
+                );
+              })}
+            </ol>
+
+            <p className="mt-8 max-w-[38rem] text-[1.0625rem] text-ink/80 sm:text-[1.125rem]">
+              {OFFER.closer}
+            </p>
 
             <div className="mt-9">
               <ScrollToFormButton targetId={FINAL_FORM_ID} />

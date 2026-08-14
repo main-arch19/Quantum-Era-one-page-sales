@@ -323,16 +323,42 @@ export const MECHANISM = {
   ],
 } as const;
 
+/**
+ * The copy always described four sequential things that happen on the call —
+ * "We start… Then we… Then we… Then we map the fix" — but rendered them as
+ * six undifferentiated paragraphs, so the sequence was invisible and the
+ * reader had to reconstruct it. The words are unchanged; only the shape is.
+ *
+ * `icon` names map to lucide-react in app/page.tsx. Monochrome Quantum Navy,
+ * never Electric — that stays reserved for the CTA.
+ */
 export const OFFER = {
   heading: "The free 30-minute teardown",
-  body: [
-    "Thirty minutes, on a call, screen shared. Here is exactly what happens.",
-    "We start with your site on a phone, on throttled mobile data, the way the person at 11:47 PM had it. You watch it load. Most people have never once seen their own site load under the conditions their customers actually use, and in our experience that is the most useful thirty seconds most business owners spend all quarter.",
-    "Then we fill in your own contact form together, live, and watch what comes back. Whatever it is, we read it the way a stranger reads it.",
-    "Then we look at what the searches for what you sell return — the ones somebody runs when they do not have your name yet, only your trade and their town — and you see who is collecting those people instead of you.",
-    "Then we map the fix. What has to change, what it costs, and the date it would go live. Real numbers and a real date, not a range.",
-    "You keep the recording and the plan whether you hire us or not. There is no pitch on this call. If your site is doing its job and the enquiries genuinely are the problem, we will tell you that, and that will be the end of it.",
+  intro: "Thirty minutes, on a call, screen shared. Here is exactly what happens.",
+  steps: [
+    {
+      icon: "smartphone",
+      label: "Your site, on a phone",
+      body: "We start with your site on a phone, on throttled mobile data, the way the person at 11:47 PM had it. You watch it load. Most people have never once seen their own site load under the conditions their customers actually use, and in our experience that is the most useful thirty seconds most business owners spend all quarter.",
+    },
+    {
+      icon: "inbox",
+      label: "Your own contact form",
+      body: "Then we fill in your own contact form together, live, and watch what comes back. Whatever it is, we read it the way a stranger reads it.",
+    },
+    {
+      icon: "search",
+      label: "What the searches return",
+      body: "Then we look at what the searches for what you sell return — the ones somebody runs when they do not have your name yet, only your trade and their town — and you see who is collecting those people instead of you.",
+    },
+    {
+      icon: "map",
+      label: "The fix, costed and dated",
+      body: "Then we map the fix. What has to change, what it costs, and the date it would go live. Real numbers and a real date, not a range.",
+    },
   ],
+  closer:
+    "You keep the recording and the plan whether you hire us or not. There is no pitch on this call. If your site is doing its job and the enquiries genuinely are the problem, we will tell you that, and that will be the end of it.",
 } as const;
 
 /**
