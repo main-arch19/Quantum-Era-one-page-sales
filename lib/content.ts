@@ -159,8 +159,36 @@ export type SecondaryProof = {
  */
 export const SECONDARY_PROOFS: SecondaryProof[] = [];
 
-/** Plain text. Never links. Never logos that link. */
-export const TRUST_LINE = ["Vivid Walls", "Yaadflexx", "Parafount"] as const;
+/**
+ * The client roster. Names only — the artwork lives in components/ClientLogos
+ * as static imports, because next/image needs the real file to emit width and
+ * height, and a roster that shifts the page as it loads is worse than no
+ * roster. Never links, and never a logo that links: a logo is the single most
+ * clicked thing on a paid page and every click on one is a lead leaving.
+ *
+ * `opticalScale` is the fudge factor that makes a logo row look level. Sizing
+ * every mark to the same pixel height does not do that — a one-line wordmark
+ * reads far larger than a three-line lockup of identical height. These are
+ * eyeballed against the rendered row, not calculated.
+ *
+ * Two portfolio clients are deliberately absent. Yaadflexx has no logo, only a
+ * circular promo badge carrying eight lines of its own copy, which at roster
+ * size is an illegible disc. Power Concepts is an icon whose entire form is a
+ * soft glow; reduced to one ink it becomes a smudge. Both would cost more than
+ * the name they add.
+ */
+export type ClientLogo = {
+  name: string;
+  opticalScale: number;
+};
+
+export const TRUST_LINE: readonly ClientLogo[] = [
+  { name: "Parafount", opticalScale: 0.78 },
+  { name: "Shark Box", opticalScale: 0.92 },
+  { name: "Vivid Walls", opticalScale: 1.14 },
+  { name: "Jamaica Centre for Advanced Medicine", opticalScale: 1.14 },
+  { name: "Shop Extreme JA on Wheels", opticalScale: 1.2 },
+] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COPY — verbatim. Do not shorten. Do not add adjectives.

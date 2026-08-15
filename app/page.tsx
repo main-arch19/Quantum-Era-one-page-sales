@@ -5,6 +5,7 @@ import { Objections } from "@/components/Objections";
 import { EnquiryForm } from "@/components/EnquiryForm";
 import { StickyBar } from "@/components/StickyBar";
 import { ScrollToFormButton } from "@/components/ScrollToFormButton";
+import { ClientLogos } from "@/components/ClientLogos";
 import {
   UnansweredCard,
   NotificationExchange,
@@ -19,7 +20,6 @@ import {
   PROOF_READY,
   PROOF_HEADING,
   SECONDARY_PROOFS,
-  TRUST_LINE,
   unfilledPlaceholders,
 } from "@/lib/content";
 
@@ -180,8 +180,8 @@ export default function LandingPage() {
 
             {/* The story, the number and the quote are omitted entirely until
                 PRIMARY_PROOF is real — a placeholder here would be a fabricated
-                claim, which Google Ads prohibits. The trust line below stays
-                either way: those three are real clients and naming them is a
+                claim, which Google Ads prohibits. The roster below stays
+                either way: those are real clients and showing their marks is a
                 statement of fact, not a performance claim. */}
             {PROOF_READY && (
               <>
@@ -223,29 +223,17 @@ export default function LandingPage() {
               </ul>
             )}
 
-            {/* Plain text. Not links, not linked logos.
-                Carries the whole section while PROOF_READY is false, so it is
-                set with real presence rather than as a mono footnote — a
-                full-width band holding one grey line read as a broken section
-                rather than a deliberately quiet one. */}
-            <ul
-              className={`flex flex-wrap items-baseline gap-x-8 gap-y-3 ${
-                PROOF_READY ? "mt-10 border-t border-line pt-8" : "mt-6"
-              }`}
+            {/* Not links, and not logos that link. While PROOF_READY is false
+                this row carries the entire section, so it is set at a size
+                that can hold it; once there is a real proof story above, it
+                steps back to a footnote under a rule. */}
+            <div
+              className={
+                PROOF_READY ? "mt-10 border-t border-line pt-8" : "mt-8"
+              }
             >
-              {TRUST_LINE.map((client) => (
-                <li
-                  key={client}
-                  className={
-                    PROOF_READY
-                      ? "font-mono text-sm text-ink/65"
-                      : "display-sm text-lead text-navy/80"
-                  }
-                >
-                  {client}
-                </li>
-              ))}
-            </ul>
+              <ClientLogos prominent={!PROOF_READY} />
+            </div>
           </div>
         </section>
 
