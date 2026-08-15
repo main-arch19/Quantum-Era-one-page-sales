@@ -83,7 +83,7 @@ export default async function BookedPage({
               description={lead?.project_description ?? ""}
               name={lead?.name ?? ""}
               email={lead?.email ?? ""}
-              utm={(lead?.utm as Record<string, string> | null) ?? {}}
+              utm={utmRecord(lead)}
             />
           ) : (
             <div className="rounded-xl border-2 border-dashed border-amber bg-amber/10 p-6">
@@ -135,7 +135,13 @@ async function loadLead(leadId: string) {
 
   const { data, error } = await supabase
     .from("leads")
-    .select("name, email, project_description, utm")
+    // `utm` was one jsonb column and is now five. CalendlyEmbed still wants
+    // the record shape, so it is rebuilt below rather than reshaped there —
+    // the attribution has to survive into the booking or a booked call
+    // cannot be traced back to the keyword that paid for it.
+    .select(
+      "name, email, project_description, utm_source, utm_medium, utm_campaign, utm_content, utm_term"
+    )
     .eq("id", leadId)
     .maybeSingle();
 
@@ -145,4 +151,33 @@ async function loadLead(leadId: string) {
   }
 
   return data;
+}
+
+/**
+ * Rebuilds the flat utm record CalendlyEmbed prefills from.
+ *
+ * Empty values are omitted rather than passed as empty strings: Calendly
+ * writes every prefill key it is given into the booking, and a run of blank
+ * utm fields on an event is harder to read than their absence.
+ */
+function utmRecord(
+  lead: Awaited<ReturnType<typeof loadLead>>
+): Record<string, string> {
+  if (!lead) return {};
+
+  const record: Record<string, string> = {};
+  const source: Record<string, unknown> = lead;
+
+  for (const key of [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content",
+    "utm_term",
+  ]) {
+    const value = source[key];
+    if (typeof value === "string" && value) record[key] = value;
+  }
+
+  return record;
 }

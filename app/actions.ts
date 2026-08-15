@@ -147,21 +147,35 @@ export async function submitEnquiry(
   // ── Persist ───────────────────────────────────────────────────────────────
   // Best-effort. A database outage must not cost us a lead we paid for, so a
   // failure here is logged loudly and the flow continues to the email.
+  //
+  // One RPC rather than two inserts: the lead row and its opening activity
+  // have to land together or the CRM shows a lead whose timeline starts with
+  // a hole. supabase-js cannot batch two inserts into one transaction, so the
+  // transaction lives in the database. See insert_lead_with_activity in
+  // supabase/crm-migration.sql in the QESCRM repo, which owns the schema.
   const supabase = getSupabase();
   if (supabase) {
-    const { error } = await supabase.from("leads").insert({
-      id: leadId,
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone || null,
-      project_description: lead.description,
-      utm: Object.keys(tracking).length ? tracking : null,
+    const { error } = await supabase.rpc("insert_lead_with_activity", {
+      p_id: leadId,
+      p_name: lead.name,
+      p_email: lead.email,
+      p_phone: lead.phone || null,
+      p_project_description: lead.description,
+      p_utm_source: tracking.utm_source ?? null,
+      p_utm_medium: tracking.utm_medium ?? null,
+      p_utm_campaign: tracking.utm_campaign ?? null,
+      p_utm_content: tracking.utm_content ?? null,
+      p_utm_term: tracking.utm_term ?? null,
+      p_gclid: tracking.gclid ?? null,
+      // status 'new', touch_count 0, owner_id null and next_touch_at
+      // now() + 2 days are all set inside the function. Unassigned is
+      // deliberate: new leads land in a queue and somebody claims them.
       // booked_at stays NULL. Calendly's webhook sets it.
     });
 
     if (error) {
       console.error("[enquiry] supabase insert failed — lead follows", error);
-      console.error(JSON.stringify({ leadId, ...lead }));
+      console.error(JSON.stringify({ leadId, ...lead, ...tracking }));
     }
   } else {
     console.warn("[enquiry] Supabase not configured — not persisted:", leadId);

@@ -10,27 +10,40 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  * component would ship that key to the browser. With this import that mistake
  * is a build error rather than a breach.
  *
- * There is exactly ONE table. Bookings are not a separate table and must not
- * become one — booked_at is a nullable column on the lead, because the query
- * that pays for this page is:
+ * A booking is still not an entity. booked_at is a nullable column on the
+ * lead, because the query that pays for this page is:
  *
  *   select * from leads where booked_at is null
  *
- * Those are the people who ran the audit, saw their site was losing enquiries,
- * gave us an email, and did not book. That list is worth more than the
- * bookings, and a schema that splits it across two tables makes it a join
- * nobody remembers to write.
+ * Those are the people who gave us their details and did not book. That list
+ * is worth more than the bookings, and a schema that splits it across two
+ * tables makes it a join nobody remembers to write.
+ *
+ * The database now also carries profiles, activities and email_sends for the
+ * internal CRM. This app does not read them: it writes leads and it appends
+ * one activity per lead through insert_lead_with_activity. See
+ * supabase/crm-migration.sql.
  */
 
+/**
+ * The columns this app touches. The CRM adds status, owner_id, touch_count
+ * and next_touch_at, which are set at insert and then owned by the CRM —
+ * nothing here reads or writes them afterwards, except the Calendly webhook
+ * clearing next_touch_at to stop the follow-up sequence.
+ */
 export type LeadRow = {
   id: string;
   created_at: string;
   name: string;
   email: string;
-  company: string;
-  website_url: string;
-  audit: unknown;
-  utm: Record<string, string> | null;
+  phone: string | null;
+  project_description: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  gclid: string | null;
   booked_at: string | null;
   calendly_event_uri: string | null;
 };

@@ -30,6 +30,8 @@ type CalendlyPayload = {
     uri?: string;
     email?: string;
     event?: string;
+    /** The booking itself. start_time is what the CRM timeline shows. */
+    scheduled_event?: { start_time?: string; end_time?: string; name?: string };
     questions_and_answers?: { question?: string; answer?: string; position?: number }[];
   };
 };
@@ -145,11 +147,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "storage unavailable" }, { status: 500 });
   }
 
+  const startTime = body.payload?.scheduled_event?.start_time ?? null;
+
   const { data, error } = await supabase
     .from("leads")
     .update({
       booked_at: new Date().toISOString(),
       calendly_event_uri: body.payload?.uri ?? body.payload?.event ?? null,
+      status: "booked",
+
+      // THIS is what stops the follow-up sequence. The cron's eligibility
+      // filter requires a non-null next_touch_at, so nulling it here ends the
+      // chase in the same statement that records the booking.
+      //
+      // Verify it after any change to this route. The failure mode is emailing
+      // somebody the day after their call to ask why they never booked, and it
+      // is silent until a lead tells you about it.
+      next_touch_at: null,
     })
     .eq("id", leadId)
     // Only the first booking counts. A reschedule must not overwrite the
@@ -167,6 +181,27 @@ export async function POST(request: Request) {
     // fine and neither should trigger a retry.
     console.info("[calendly] no row updated", { leadId });
     return NextResponse.json({ ok: true, matched: false });
+  }
+
+  // The timeline entry. Best-effort on purpose: the booking is already
+  // recorded on the lead, and Calendly retrying the whole webhook because the
+  // activity log hiccuped would risk nothing useful.
+  //
+  // user_id is null — no member of staff did this, the invitee did.
+  const { error: activityError } = await supabase.from("activities").insert({
+    lead_id: leadId,
+    user_id: null,
+    type: "booking",
+    body: startTime
+      ? `Call booked for ${startTime}`
+      : "Call booked (Calendly sent no start time)",
+  });
+
+  if (activityError) {
+    console.error("[calendly] booking recorded, activity failed", {
+      leadId,
+      error: activityError,
+    });
   }
 
   return NextResponse.json({ ok: true, matched: true });
