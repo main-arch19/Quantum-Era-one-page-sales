@@ -316,8 +316,8 @@ export const NARRATIVE_SECTIONS = [
     heading: "The best lead you will ever get is one that arrives at midnight.",
     body: [
       "Somebody sat on a sofa with a laptop, decided tonight was the night they were finally going to sort this, and went looking. They found you. They read enough to think you might be the ones. Then they filled in your form.",
-      "Understand what that person is. They are not browsing. Nobody fills in a contact form at 11:47 PM to browse. They have made a decision and they are now looking for somewhere to put it.",
-      "They are also, at that exact moment, the easiest sale you will ever be offered. No haggling yet, no comparison spreadsheet, no procurement process. Just a person who has decided and wants somebody to take it from here.",
+      "Nobody fills in a contact form at 11:47 PM to browse. They have decided, and they are looking for somewhere to put that decision.",
+      "They are also the easiest sale you will ever be offered. No haggling, no comparison spreadsheet, no procurement. Just a person who wants somebody to take it from here.",
       "Your website has about ninety seconds to be that somebody.",
     ],
   },
@@ -328,10 +328,10 @@ export const NARRATIVE_SECTIONS = [
       "Everybody knows what “we will be in touch shortly” means. It means nobody read it.",
     body: [
       "One minute later your site sent them this: “Thank you for your message. We have received your enquiry and will be in touch shortly.”",
-      "They have seen that sentence a thousand times. It answers nothing. It does not say when, it does not say who, it does not say what happens next, and it very obviously was not written by a person who has just looked at what they sent.",
-      "So they did the rational thing, and it took them four minutes. They went back to the search results and filled in two more forms. Possibly three. Not because they preferred those companies — they had never heard of them either — but because at 11:47 PM the only sensible strategy is to ask everybody and see who turns up.",
-      "You are now in a race you do not know you have entered. The starting gun went off while you were asleep, and the finish line is whoever replies first with something that sounds like a human being who read the message.",
-      "Here is the part that should bother you. You were probably the best of the three. You have been doing this for years, your work is better, your prices are fairer. None of that was on the table. The only thing being measured was who answered.",
+      "They have seen that sentence a thousand times. It does not say when, it does not say who, it does not say what happens next, and it was obviously not written by anyone who read what they sent.",
+      "So they did the rational thing, and it took four minutes. They went back to the search results and filled in two more forms. Not because they preferred those companies — they had never heard of them either — but because at 11:47 PM the only sensible strategy is to ask everybody and see who turns up.",
+      "You are now in a race you did not know you had entered. The gun went off while you were asleep, and the finish line is whoever replies first with something that sounds like a person who read the message.",
+      "Here is the part that should bother you. You were probably the best of the three. Better work, fairer prices, years of doing this. None of it was on the table. The only thing being measured was who answered.",
     ],
   },
   {
@@ -339,11 +339,11 @@ export const NARRATIVE_SECTIONS = [
     eyebrow: "7:15 AM",
     heading: "You will never count this one as a loss.",
     body: [
-      "By the time you opened the laptop, one of the other two had already replied — most likely automatically, with something that asked a real question. By mid-morning they had a call booked.",
-      "You replied at 9:40. Perfectly good reply. Friendly, professional, offered to talk it through. It landed on somebody who had already spoken to a competitor and was now, without quite realising it, comparing your first message to a conversation that was three hours old.",
+      "By the time you opened the laptop, one of the other two had already replied — automatically, with something that asked a real question. By mid-morning they had a call booked.",
+      "You replied at 9:40. Perfectly good reply. Friendly, professional, offered to talk it through. It landed on somebody who had already spoken to a competitor, and was now comparing your first message to a conversation three hours old.",
       "Sometimes you still win those. Mostly you get no reply, and it goes down as a tyre-kicker.",
-      "That is the expensive part, and it is not the lost job. It is that the enquiry is still sitting in your inbox, and it looks exactly like a lead. Not like a loss. There is no missed-call badge, no bounce rate, no red number anywhere in any dashboard. You have a record of it arriving and no record at all of why it died.",
-      "So the conclusion you reach is that the enquiries you get are mostly time-wasters. It is the only conclusion available from the evidence you can see. And it is wrong, which is why nothing changes.",
+      "That is the expensive part, and it is not the lost job. It is that the enquiry is still in your inbox, and it looks exactly like a lead. Not like a loss. No missed-call badge, no bounce rate, no red number in any dashboard. You have a record of it arriving and no record of why it died.",
+      "So you conclude that the enquiries you get are mostly time-wasters. It is the only conclusion the evidence allows. And it is wrong, which is why nothing changes.",
     ],
   },
   {
@@ -354,10 +354,10 @@ export const NARRATIVE_SECTIONS = [
     eyebrow: "11:47 PM × 52",
     heading: "Now do it for a year.",
     body: [
-      "Take your average project value. Not your biggest, not your smallest — your average. Hold that number.",
-      "Now count the enquiries that came through the site last year. You have that figure, or you can get it in about a minute. Then be honest about how many of them you replied to within the hour, on the day they arrived, with something that asked them a question rather than acknowledging receipt.",
-      "The gap between those two numbers is what this page is about. Every one in that gap was a person who had already decided to spend money and was waiting to be told where to put it.",
-      "You do not need to know exactly how many of them you would have won. You only need to decide whether it is more than one a month — because one a month, multiplied by your average, is almost certainly larger than the cost of fixing this by a wide margin. And it recurs every year until something changes.",
+      "Take your average project value. Not your biggest, not your smallest. Hold that number.",
+      "Now count the enquiries that came through the site last year. Then be honest about how many you answered within the hour, on the day, with something that asked a question rather than acknowledging receipt.",
+      "The gap between those two numbers is what this page is about. Every one in it had already decided to spend money and was waiting to be told where to put it.",
+      "You do not need to know how many you would have won. Only whether it is more than one a month — because one a month, times your average, is a bigger number than fixing this costs. And it recurs every year until something changes.",
     ],
   },
 ] as const;
@@ -365,12 +365,13 @@ export const NARRATIVE_SECTIONS = [
 export const MECHANISM = {
   heading: "We build the website that answers.",
   body: [
-    "Start with the thing that is actually broken, because it is rarely the design. Your site takes an enquiry and puts it in a queue. Everything after that depends on a human being who is asleep, on a job, or on holiday. That is the whole failure, and no amount of restyling the homepage touches it.",
-    "So the site answers. Not an auto-responder — not “Thank you, we have received your message, we will be in touch.” Everyone knows what that means, and what it means is nobody read it.",
-    "A real conversation, in the ninety seconds while they are still sitting there. The site asks what they need. It asks what kind of project, what sort of timeline, roughly what they are working with. It works out whether they are a serious buyer or somebody pricing a hobby. It puts the serious ones straight into your calendar. And when you wake up, the whole exchange is in your inbox — what they want, when they want it, and whether they are worth your Tuesday.",
-    "Notice what that does to the race. You are no longer competing on who checks their email first. You answered at 11:48, while the other two were still queuing, and by the time anybody else replies you already have the call booked.",
-    "Then the rest of it has to hold up, because the same person is still deciding. Your site has to load on a phone on mobile data without them giving up — most of your enquiries arrive that way, at night, on a handset, on whatever signal is going. It has to say what you charge, or enough about it that a serious buyer knows they are in the right place and a hobbyist knows they are not. It has to look like the more serious operation, because when someone is choosing between three suppliers, the one whose site looks like it belongs to a real company gets the benefit of the doubt before a word is read.",
-    "And you already know the alternative, because it is what you have. A site that was fine when it was built, that nobody has touched in three years, quietly forwarding enquiries to an inbox and hoping somebody gets there in time. It is not that it does not work. It is that it does exactly half the job and stops at the point where the money is.",
+    "Start with the thing that is actually broken, because it is rarely the design. Your site takes an enquiry and puts it in a queue, and everything after that depends on a human being who is asleep, on a job, or on holiday. That is the whole failure, and restyling the homepage does not touch it.",
+    "So the site answers. Not an auto-responder — not “Thank you, we have received your message.” Everyone knows what that means, and what it means is nobody read it.",
+    "A real conversation, in the ninety seconds while they are still sitting there. It asks what they need, what kind of project, what timeline, what they are working with. It works out whether they are a serious buyer or somebody pricing a hobby, and puts the serious ones straight into your calendar. When you wake up, the whole exchange is in your inbox — what they want, when, and whether they are worth your Tuesday.",
+    "Notice what that does to the race. You are no longer competing on who checks their email first. You answered at 11:48, and by the time anybody else replies you already have the call booked.",
+    "Then the rest has to hold up, because the same person is still deciding. It has to load on a phone on mobile data — most enquiries arrive that way, at night, on whatever signal is going. It has to say what you charge, or enough that a serious buyer knows they are in the right place and a hobbyist knows they are not.",
+    "And it has to look like the more serious operation. When someone is choosing between three suppliers, the one whose site looks like a real company gets the benefit of the doubt before a word is read.",
+    "You already know the alternative, because it is what you have. A site that was fine when it was built, that nobody has touched in three years, quietly forwarding enquiries to an inbox and hoping somebody gets there in time. It is not that it does not work. It is that it does exactly half the job and stops at the point where the money is.",
     "We build for the ninety seconds after somebody decides. That is the whole business.",
   ],
 } as const;
@@ -391,7 +392,7 @@ export const OFFER = {
     {
       icon: "smartphone",
       label: "Your site, on a phone",
-      body: "We start with your site on a phone, on throttled mobile data, the way the person at 11:47 PM had it. You watch it load. Most people have never once seen their own site load under the conditions their customers actually use, and in our experience that is the most useful thirty seconds most business owners spend all quarter.",
+      body: "We start with your site on a phone, on throttled mobile data, the way the person at 11:47 PM had it. You watch it load. Most owners have never seen their own site load under the conditions their customers actually use, and it is usually the most useful thirty seconds of the call.",
     },
     {
       icon: "inbox",
