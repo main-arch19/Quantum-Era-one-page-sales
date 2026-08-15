@@ -57,8 +57,15 @@ export function ClientLogos({ prominent = false }: { prominent?: boolean }) {
   const base = prominent ? BASE_HEIGHT * 1.1 : BASE_HEIGHT;
   const opacity = prominent ? "opacity-90" : "opacity-75";
 
+  // One container for every mark, image and wordmark alike. Giving the boxes
+  // only to the logos would split the row visually in two — seven framed
+  // things and three loose ones — which is exactly the "images plus
+  // leftovers" reading the type treatment exists to avoid.
+  const cell =
+    "flex h-[4.5rem] items-center justify-center rounded-card border border-line bg-white px-5";
+
   return (
-    <ul className="flex flex-wrap items-center gap-x-9 gap-y-6 sm:gap-x-12">
+    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       {TRUST_LINE.map((mark) => {
         const art = mark.kind === "logo" ? ART[mark.name] : undefined;
 
@@ -69,7 +76,7 @@ export function ClientLogos({ prominent = false }: { prominent?: boolean }) {
           const width = Math.round((art.width / art.height) * height);
 
           return (
-            <li key={mark.name}>
+            <li key={mark.name} className={cell}>
               <Image
                 src={art}
                 alt={mark.name}
@@ -78,18 +85,19 @@ export function ClientLogos({ prominent = false }: { prominent?: boolean }) {
                 // Below the fold at every width. Nothing here competes with
                 // the hero for the LCP.
                 loading="lazy"
-                className={opacity}
+                className={`max-w-full object-contain ${opacity}`}
               />
             </li>
           );
         }
 
         return (
-          <li
-            key={mark.name}
-            className={`font-display text-base font-bold tracking-[-0.01em] text-navy ${opacity}`}
-          >
-            {mark.name}
+          <li key={mark.name} className={cell}>
+            <span
+              className={`text-balance text-center font-display text-sm font-bold leading-tight tracking-[-0.01em] text-navy ${opacity}`}
+            >
+              {mark.name}
+            </span>
           </li>
         );
       })}

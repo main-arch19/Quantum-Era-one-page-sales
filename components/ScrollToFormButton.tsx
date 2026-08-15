@@ -16,7 +16,7 @@ export function ScrollToFormButton({ targetId }: { targetId: string }) {
     <button
       type="button"
       onClick={() => scrollToNextStep(targetId)}
-      className="inline-block rounded-lg bg-electric px-8 py-4 font-display text-base font-bold tracking-[-0.01em] text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
+      className="inline-block rounded-control bg-electric px-8 py-4 font-display text-base font-bold tracking-[-0.01em] text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
     >
       {ENQUIRY_COPY.button}
     </button>

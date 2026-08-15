@@ -39,6 +39,36 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 
 /**
+ * The header block for the CARD sections — offer, proof, objections.
+ *
+ * Centred, because that is what the reference does and because a card grid
+ * below reads as a deliberate composition under a centred header and as a
+ * pile under a left-aligned one.
+ *
+ * Deliberately NOT used on the four narrative sections. Those are an essay at
+ * a 62-character measure, and a centred header over left-aligned long prose
+ * reads as a mistake rather than as a choice. The reference has no equivalent
+ * section, so there is nothing there to copy.
+ */
+function SectionHeader({
+  eyebrow,
+  heading,
+  children,
+}: {
+  eyebrow: string;
+  heading: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="mx-auto max-w-[42rem] text-center">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className="display-sm mt-3 text-h2 text-navy">{heading}</h2>
+      {children}
+    </div>
+  );
+}
+
+/**
  * Long copy. The measure lives on the section wrapper, not here — nesting a
  * 38rem block inside a centred 48rem one left every paragraph with 160px of
  * dead space to its right and pushed the whole column off the optical centre
@@ -68,11 +98,11 @@ export default function LandingPage() {
 
       {unfilled.length > 0 && (
         <div className="border-b-2 border-amber bg-amber/15 px-5 py-3 text-center sm:px-8">
-          <p className="text-sm font-medium text-[#7a4700]">
+          <p className="text-sm font-medium text-amber-ink">
             ⚠ {unfilled.length} placeholder{unfilled.length === 1 ? "" : "s"}{" "}
             unfilled — this page must not run against paid traffic yet.
           </p>
-          <p className="mt-1 font-mono text-micro text-[#7a4700]/80">
+          <p className="mt-1 font-mono text-micro text-amber-ink/80">
             {unfilled.join(" · ")}
           </p>
         </div>
@@ -176,7 +206,9 @@ export default function LandingPage() {
         {/* ── PROOF ─────────────────────────────────────────────────────── */}
         <section className="border-t border-line bg-white px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
-            <Eyebrow>Proof</Eyebrow>
+            <div className="text-center">
+              <Eyebrow>Proof</Eyebrow>
+            </div>
 
             {/* The story, the number and the quote are omitted entirely until
                 PRIMARY_PROOF is real — a placeholder here would be a fabricated
@@ -240,29 +272,29 @@ export default function LandingPage() {
         {/* ── THE OFFER ─────────────────────────────────────────────────── */}
         <section className="border-t border-line bg-paper px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
-            <Eyebrow>30 minutes · No cost</Eyebrow>
-            <h2 className="display-sm mt-3 text-h2 text-navy">
-              {OFFER.heading}
-            </h2>
-            <p className="mt-5 max-w-[38rem] text-body text-ink/80">
-              {OFFER.intro}
-            </p>
+            <SectionHeader eyebrow="30 minutes · No cost" heading={OFFER.heading}>
+              <p className="mt-5 text-body text-ink/70">{OFFER.intro}</p>
+            </SectionHeader>
 
             {/* Two columns on desktop. The prose measure alone left half the
                 viewport empty here, which read as an unfinished layout rather
                 than as restraint. */}
-            <ol className="mt-10 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
+            <ol className="mt-10 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
               {OFFER.steps.map((step, index) => {
                 const Icon = OFFER_ICONS[step.icon];
                 return (
-                  <li key={step.label} className="bg-paper p-6 sm:p-8">
+                  <li key={step.label} className="bg-white p-6 sm:p-8">
                     <div className="flex items-center gap-3">
-                      {/* Navy, never Electric — that is the CTA's colour. */}
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy/[0.07] text-navy">
-                        <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-                      </span>
-                      <span className="font-mono text-micro uppercase tracking-[0.18em] text-ink/65">
+                      {/* A filled disc, not a loose digit beside an icon. The
+                          numeral is the thing that says "these happen in this
+                          order", so it gets the solid shape and the icon gets
+                          the quiet one. Navy, never Electric — that is the
+                          CTA's colour and it means "click here". */}
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy font-mono text-micro font-medium tabular-nums text-white">
                         {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-navy/[0.06] text-navy">
+                        <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
                       </span>
                     </div>
                     <h3 className="display-sm mt-4 text-lead text-navy">
@@ -276,11 +308,11 @@ export default function LandingPage() {
               })}
             </ol>
 
-            <p className="mt-8 max-w-[38rem] text-body text-ink/80">
+            <p className="mx-auto mt-10 max-w-[42rem] text-center text-body text-ink/80">
               {OFFER.closer}
             </p>
 
-            <div className="mt-10">
+            <div className="mt-8 text-center">
               <ScrollToFormButton targetId={FINAL_FORM_ID} />
             </div>
           </div>
@@ -289,11 +321,13 @@ export default function LandingPage() {
         {/* ── OBJECTIONS ────────────────────────────────────────────────── */}
         <section className="border-t border-line bg-white px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
-            <Eyebrow>Before you book</Eyebrow>
-            <h2 className="display-sm mb-8 mt-3 text-h2 text-navy">
-              The questions people ask us first
-            </h2>
-            <Objections />
+            <SectionHeader
+              eyebrow="Before you book"
+              heading="The questions people ask us first"
+            />
+            <div className="mx-auto mt-10 max-w-[46rem]">
+              <Objections />
+            </div>
           </div>
         </section>
 
@@ -316,7 +350,7 @@ export default function LandingPage() {
                 it. It has to read identically wherever it appears — a control
                 that changes colour with the band it sits on stops looking
                 like the same control. */}
-            <div className="rounded-xl bg-paper/95 p-4 sm:p-5">
+            <div className="rounded-card bg-paper p-4 sm:p-5">
               <EnquiryForm formId={FINAL_FORM_ID} />
             </div>
           </div>

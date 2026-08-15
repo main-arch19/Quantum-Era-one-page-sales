@@ -50,7 +50,7 @@ function LegalDialog({
         if (event.target === dialogRef.current) onClose();
       }}
       aria-labelledby={`${doc.id}-title`}
-      className="m-auto max-h-[85vh] w-[min(46rem,calc(100vw-2rem))] rounded-xl border border-line bg-white p-0 text-ink backdrop:bg-ink-deep/55"
+      className="m-auto max-h-[85vh] w-[min(46rem,calc(100vw-2rem))] rounded-card border border-line bg-white p-0 text-ink backdrop:bg-ink-deep/55"
     >
       <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-5">
         <div>
@@ -66,7 +66,7 @@ function LegalDialog({
           type="button"
           onClick={onClose}
           aria-label={`Close ${doc.title}`}
-          className="shrink-0 rounded-lg p-3 text-ink/65 transition-colors hover:bg-paper hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
+          className="shrink-0 rounded-control p-3 text-ink/65 transition-colors hover:bg-paper hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
         >
           <svg
             width="20"

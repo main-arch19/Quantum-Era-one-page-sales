@@ -18,7 +18,18 @@
    paper     #FAFAFA  page background
    ink       #12121A  body copy
    ink-deep  #05061C  darkest surface
-   line      #E5E7EB  borders
+   line      #E5E7EB  DECORATIVE hairlines only — section rules,
+                      dividers, card edges. 1.24:1 on white, which
+                      is fine: these separate regions, they are not
+                      boundaries a user has to find.
+   field     #8A8A93  The edge of anything you type into. 3.42:1 on
+                      white, 3.28:1 on paper. Input borders are a
+                      boundary the user MUST perceive, so they owe
+                      3:1 and #E5E7EB never paid it. Never used for
+                      a decorative line — that is what line is for.
+   surface   #F4F4F7  Card fill. A neutral, not an accent: it exists
+                      so a card reads as an object sitting on the
+                      section rather than as a bordered hole in it.
    amber     #F5A524  THE COLOUR OF THE PROBLEM, and nothing
                       else. One permitted use: the unanswered
                       notification card. It never means
@@ -39,6 +50,8 @@
   --color-ink: #12121a;
   --color-ink-deep: #05061c;
   --color-line: #e5e7eb;
+  --color-field: #8a8a93;
+  --color-surface: #f4f4f7;
   --color-amber: #f5a524;
   --color-amber-ink: #9a5b00;
 
@@ -77,6 +90,24 @@
      kind of difference nobody can name and everybody feels.
      ---------------------------------------------------------- */
   --spacing-gutter: 3.5rem;
+
+  /* ----------------------------------------------------------
+     SURFACES — two radii and one shadow. Not three, not two.
+
+     Cards get the larger radius, controls the smaller. The page
+     previously ran rounded-xl (12px) and rounded-lg (8px), which
+     was already a system; this widens the card end so a card
+     reads as an object rather than as a box, and leaves the
+     control end alone where a large radius would look inflated.
+
+     One shadow, and a quiet one. The notification cards used to
+     carry a 40px drop at 25–35% alpha — the only heavy shadow on
+     the page, which made them look pasted onto it rather than
+     part of it.
+     ---------------------------------------------------------- */
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+  --shadow-card: 0 1px 2px rgb(5 6 28 / 0.04), 0 8px 24px -12px rgb(5 6 28 / 0.1);
 }
 
 /* Body copy is the one size that steps rather than interpolating:
@@ -108,10 +139,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Room for the sticky mobile CTA bar so it never covers the footer. */
+/* Room for the sticky mobile CTA bar so it never covers the footer.
+
+   Measured, not guessed: the bar is a 16px/1.65 button at py-4 (32px) inside
+   a wrapper at py-3 (24px) over a 1px border, which lands near 83px. The old
+   4.75rem reserved 76px and the footer sat about 7px under the bar — worse on
+   a notched handset, where the safe-area inset makes the bar taller still. */
 @media (max-width: 767px) {
   body {
-    padding-bottom: 4.75rem;
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
 }
 

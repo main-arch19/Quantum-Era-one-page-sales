@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitEnquiry } from "@/app/actions";
 import { EMPTY_ENQUIRY_STATE, type EnquiryFieldName } from "@/lib/form-state";
@@ -30,15 +30,35 @@ export function EnquiryForm({ formId }: { formId: string }) {
     ...(state.fieldErrors ?? {}),
   };
 
-  // Stamped at render. The server rejects anything submitted within 3s of it.
-  const [renderedAt] = useState(() => Date.now());
+  /**
+   * Stamped after mount, never during render.
+   *
+   * This used to be `useState(() => Date.now())`, which runs once on the
+   * server and again on the client and cannot agree: the prerendered HTML
+   * carried a build-time timestamp and hydration replaced it with a different
+   * one, throwing a mismatch warning on every single page load. The value was
+   * also wrong on its own terms — on a statically prerendered page it measured
+   * time since the BUILD, so the 3-second bot check had been dead since the
+   * first deploy. Every submission passed it.
+   *
+   * A ref plus an effect keeps it out of the render pass entirely, so the
+   * server emits an empty field and the browser fills it the moment the form
+   * is really on screen. That is the number the timing check actually wants.
+   */
+  const renderedAtRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (renderedAtRef.current) {
+      renderedAtRef.current.value = String(Date.now());
+    }
+  }, []);
 
   return (
     <form
       id={formId}
       action={formAction}
       noValidate
-      className="rounded-xl border border-line bg-white p-5 sm:p-6"
+      className="rounded-card border border-line bg-white p-5 shadow-card sm:p-6"
     >
       <h3 className="display-sm text-lead text-navy">{ENQUIRY_COPY.heading}</h3>
       <p className="mt-2 text-sm text-ink/70">{ENQUIRY_COPY.subheading}</p>
@@ -70,8 +90,8 @@ export function EnquiryForm({ formId }: { formId: string }) {
             // The focus ring matches every button on the page: 2px Electric at
             // 2px offset. A 1px border colour change was the weakest focus
             // indicator here and the only one that was not visible at a glance.
-            className: `mt-2 w-full rounded-lg border bg-white px-4 py-3 text-base text-ink outline-none transition-colors placeholder:text-ink/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric ${
-              error ? "border-amber" : "border-line"
+            className: `mt-2 w-full rounded-control border bg-white px-4 py-3 text-base text-ink outline-none transition-colors placeholder:text-ink/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-electric ${
+              error ? "border-amber" : "border-field"
             }`,
           };
 
@@ -110,7 +130,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
       </div>
 
       <Honeypot formId={formId} />
-      <input type="hidden" name="rendered_at" value={renderedAt} />
+      <input type="hidden" name="rendered_at" ref={renderedAtRef} defaultValue="" />
       {Object.entries(tracking).map(([key, value]) => (
         <input key={key} type="hidden" name={key} value={value} />
       ))}
@@ -118,7 +138,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
       {state.formError && (
         <p
           role="alert"
-          className="mt-4 rounded-lg border border-amber bg-amber/10 px-4 py-3 text-sm text-amber-ink"
+          className="mt-4 rounded-control border border-amber bg-amber/10 px-4 py-3 text-sm text-amber-ink"
         >
           {state.formError}
         </p>
@@ -141,7 +161,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-lg bg-electric px-6 py-4 font-display text-base font-bold tracking-[-0.01em] text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric disabled:cursor-not-allowed disabled:opacity-70"
+      className="w-full rounded-control bg-electric px-6 py-4 font-display text-base font-bold tracking-[-0.01em] text-white transition-colors hover:bg-royal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? ENQUIRY_COPY.sending : ENQUIRY_COPY.button}
     </button>

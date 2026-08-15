@@ -34,7 +34,7 @@ export function UnansweredCard({ className = "" }: { className?: string }) {
 
   return (
     <div
-      className={`rounded-xl border border-line bg-white p-5 shadow-[0_1px_3px_rgba(5,6,28,0.06),0_18px_40px_-20px_rgba(5,6,28,0.25)] ${className}`}
+      className={`rounded-card border border-line bg-white p-5 shadow-card ${className}`}
     >
       <div className="flex items-center justify-between gap-4">
         <span className="text-sm font-medium text-ink/65">{card.source}</span>
@@ -68,7 +68,7 @@ function AnsweredCard() {
   const card = NOTIFICATION_CARDS.answered;
 
   return (
-    <div className="rounded-xl border border-electric/25 bg-white p-5 shadow-[0_1px_3px_rgba(5,6,28,0.06),0_18px_40px_-20px_rgba(14,20,240,0.35)]">
+    <div className="rounded-card border border-electric/25 bg-white p-5 shadow-card">
       <div className="flex items-center justify-between gap-4">
         <span className="text-sm font-medium text-ink/65">{card.source}</span>
         <Stamp time={card.stamp} tone="electric" />

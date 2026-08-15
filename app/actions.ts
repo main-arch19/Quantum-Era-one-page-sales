@@ -100,8 +100,27 @@ export async function submitEnquiry(
     redirect(`/booked?lid=${randomUUID()}`);
   }
 
-  const renderedAt = Number(formData.get("rendered_at"));
-  if (Number.isFinite(renderedAt) && Date.now() - renderedAt < MIN_FILL_MS) {
+  /**
+   * The timing gate. Only applied when the browser actually stamped the form.
+   *
+   * The field is empty until the client effect fills it in, so a blank value
+   * means JavaScript never ran — a no-JS visitor, or a bot that posted the
+   * form without executing it. Neither can be judged on fill time, and a
+   * genuine no-JS submission must not be silently swallowed, so an unstamped
+   * form skips this check and is left to the honeypot and rate limiter.
+   *
+   * Explicitly, rather than by accident: `Number("")` is 0, not NaN, so the
+   * old `Number.isFinite` guard let an empty value through as a timestamp at
+   * the epoch. It reached the right outcome for the wrong reason, which is the
+   * kind of thing that stops being true the moment somebody edits it.
+   */
+  const stamp = formData.get("rendered_at");
+  const renderedAt = typeof stamp === "string" && stamp !== "" ? Number(stamp) : null;
+  if (
+    renderedAt !== null &&
+    Number.isFinite(renderedAt) &&
+    Date.now() - renderedAt < MIN_FILL_MS
+  ) {
     redirect(`/booked?lid=${randomUUID()}`);
   }
 
