@@ -31,6 +31,34 @@ const nextConfig: NextConfig = {
         permanent: false,
         basePath: false,
       },
+
+      /**
+       * Point the origin root at robots.txt, where crawlers actually look.
+       *
+       * basePath prefixes everything in public/, so the file was only reachable
+       * at "/websites-that-answer/robots.txt" while "/robots.txt" returned 404.
+       * Nothing was broken by that — a missing robots.txt means nothing is
+       * disallowed, and AdsBot-Google was verified getting 200 on the page
+       * itself — but the file was doing nothing at all while its own first line
+       * calls itself CRITICAL. The day somebody adds a Disallow to it, it would
+       * silently keep doing nothing.
+       *
+       * A redirect rather than a rewrite because Next rejects a rewrite whose
+       * destination sits outside basePath:
+       *
+       *     The route /robots.txt rewrites urls outside of the basePath.
+       *
+       * Google follows up to five hops when fetching robots.txt, so a redirect
+       * is within spec. Temporary, for the same reason as the root redirect
+       * above: once this app sits behind the main domain's rewrite, robots.txt
+       * belongs to the main site, and a cached 301 would send it here forever.
+       */
+      {
+        source: "/robots.txt",
+        destination: "/websites-that-answer/robots.txt",
+        permanent: false,
+        basePath: false,
+      },
     ];
   },
 };

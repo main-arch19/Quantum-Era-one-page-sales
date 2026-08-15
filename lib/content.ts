@@ -160,34 +160,58 @@ export type SecondaryProof = {
 export const SECONDARY_PROOFS: SecondaryProof[] = [];
 
 /**
- * The client roster. Names only — the artwork lives in components/ClientLogos
- * as static imports, because next/image needs the real file to emit width and
- * height, and a roster that shifts the page as it loads is worse than no
- * roster. Never links, and never a logo that links: a logo is the single most
- * clicked thing on a paid page and every click on one is a lead leaving.
+ * The client roster — every client on the portfolio, all ten.
  *
- * `opticalScale` is the fudge factor that makes a logo row look level. Sizing
- * every mark to the same pixel height does not do that — a one-line wordmark
- * reads far larger than a three-line lockup of identical height. These are
- * eyeballed against the rendered row, not calculated.
+ * Names only here. The artwork lives in components/ClientLogos as static
+ * imports, because next/image needs the real file to emit width and height,
+ * and a roster that shifts the page as it loads is worse than no roster.
+ * Never links, and never a logo that links: a logo is the single most
+ * reflexively clicked thing on a paid page, and every click on one is a lead
+ * leaving.
  *
- * Two portfolio clients are deliberately absent. Yaadflexx has no logo, only a
- * circular promo badge carrying eight lines of its own copy, which at roster
- * size is an illegible disc. Power Concepts is an icon whose entire form is a
- * soft glow; reduced to one ink it becomes a smudge. Both would cost more than
- * the name they add.
+ * Seven have a mark that survives being flattened to one ink. Three do not,
+ * and they are named in type instead:
+ *
+ *   Yaadflexx      an illustrated badge — Statue of Liberty, palm trees and
+ *                  two lines of its own small type — which at roster size is
+ *                  a dark blob.
+ *   Pherson's      a blue illustrated card with the background painted in, so
+ *                  one ink makes it a navy rectangle.
+ *   Power Concepts a photograph of a gold bulb on black. A photo is not a
+ *                  logo and cannot be made into one.
+ *
+ * Setting those three in Sora rather than dropping them keeps every client
+ * named and keeps the row one ink. Three images that failed to load would look
+ * like a bug; three names set consistently look like a decision.
+ *
+ * `opticalScale` is the fudge that makes a logo row read level. Sizing every
+ * mark to the same pixel height does not do it — a one-line wordmark reads far
+ * larger than a three-line lockup of identical height. Eyeballed against the
+ * rendered row, not calculated.
+ *
+ * Order is deliberate: the strongest marks lead, and the three wordmarks are
+ * spaced apart. Clustered at the end they would read as a leftover group.
  */
-export type ClientLogo = {
-  name: string;
-  opticalScale: number;
-};
+export type ClientMark =
+  | { name: string; kind: "logo"; opticalScale: number }
+  | { name: string; kind: "wordmark" };
 
-export const TRUST_LINE: readonly ClientLogo[] = [
-  { name: "Parafount", opticalScale: 0.78 },
-  { name: "Shark Box", opticalScale: 0.92 },
-  { name: "Vivid Walls", opticalScale: 1.14 },
-  { name: "Jamaica Centre for Advanced Medicine", opticalScale: 1.14 },
-  { name: "Shop Extreme JA on Wheels", opticalScale: 1.2 },
+export const TRUST_LINE: readonly ClientMark[] = [
+  { name: "Parafount", kind: "logo", opticalScale: 0.78 },
+  { name: "Shark Box", kind: "logo", opticalScale: 0.92 },
+  { name: "Yaadflexx", kind: "wordmark" },
+  { name: "Vivid Walls", kind: "logo", opticalScale: 1.14 },
+  // A compact icon with no wordmark beside it. At a height matched to the
+  // lockups it reads as a stray leaf, so it gets sized to match their
+  // presence rather than their height.
+  { name: "Sannovia Skincare", kind: "logo", opticalScale: 1.55 },
+  { name: "Power Concepts", kind: "wordmark" },
+  { name: "Jamaica Centre for Advanced Medicine", kind: "logo", opticalScale: 1.14 },
+  // Fine hairlines and a very small wordmark under the monogram. Sized up so
+  // the script reads as a script rather than as a grey smear.
+  { name: "Nykefah Nairne", kind: "logo", opticalScale: 1.2 },
+  { name: "Pherson's Kellan Estates", kind: "wordmark" },
+  { name: "Shop Extreme JA on Wheels", kind: "logo", opticalScale: 1.2 },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
