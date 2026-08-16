@@ -21,11 +21,25 @@
  * It looks like a lead rather than a loss, which is exactly why it has never
  * been counted.
  *
- * THIS IS PAGE A. It requires the visitor to have a URL to type, and every
- * argument below assumes an existing site with an existing contact form. Do NOT
- * broaden this copy to accommodate people with no website — that is a separate
- * page with a separate ad group, and serving both makes this one vague. Vague
- * is what kills paid traffic.
+ * THIS IS PAGE A. Every ARGUMENT below assumes an existing site with an
+ * existing contact form. Do NOT broaden that argument to accommodate people
+ * with no website — that is a separate page with a separate ad group, and
+ * serving both makes this one vague. Vague is what kills paid traffic.
+ *
+ * THE OFFER IS DELIBERATELY ONE STEP AHEAD OF THE ARGUMENT. The argument
+ * proves their current site loses enquiries; the ask is what they want BUILT,
+ * and what they receive is a scoped plan with a price and a date. That is not
+ * a contradiction — it is the conclusion. Somebody persuaded their site is
+ * costing them money does not want a diagnosis, they want the replacement
+ * costed. The offer section still opens on the 11:47 PM buyer and step 03
+ * still shows them who is collecting those searches; only the starting
+ * material changed, from the site they have to the thing they want.
+ *
+ * So: OFFER, FINAL_CTA and ENQUIRY_COPY speak to build intent. HERO,
+ * NARRATIVE_SECTIONS, MECHANISM and OBJECTIONS speak to an existing failing
+ * site. Keep that split. Moving build language up into the narrative is what
+ * would make this page vague, and it is the specific mistake this note exists
+ * to prevent.
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -85,7 +99,7 @@ export const BUILD_TIMEFRAME = "[TIMEFRAME]";
 /** Markets actually served, e.g. "Jamaica, the wider Caribbean and the US". */
 export const MARKETS = "[MARKETS]";
 
-/** The Calendly event link for the teardown. Embedded on /booked only. */
+/** The Calendly event link for the build call. Embedded on /booked only. */
 export const CALENDLY_URL =
   process.env.NEXT_PUBLIC_CALENDLY_URL ?? "[CALENDLY-URL]";
 
@@ -240,10 +254,10 @@ export const HERO = {
  * loses you the privacy-cautious.
  */
 export const ENQUIRY_COPY = {
-  heading: "Tell us what your site is doing",
+  heading: "Tell us what you want built",
   subheading:
     "Four questions, one minute. A real person reads every one of these and comes back with a real answer, not an auto-reply.",
-  button: "Get my teardown",
+  button: "Get my build plan",
   sending: "Sending…",
   consent:
     "No list, no sequence. We reply once, by email, and only about this.",
@@ -280,11 +294,11 @@ export const ENQUIRY_FIELDS = [
   },
   {
     name: "description",
-    label: "What happens now",
+    label: "What you want built",
     type: "textarea",
     autoComplete: "off",
     placeholder:
-      "A few lines is plenty — what the business does, and what happens when somebody fills in your form.",
+      "A few lines is plenty — what the business does, and what you want the new site to do for it.",
     required: true,
   },
 ] as const;
@@ -386,32 +400,32 @@ export const MECHANISM = {
  * never Electric — that stays reserved for the CTA.
  */
 export const OFFER = {
-  heading: "The free 30-minute teardown",
+  heading: "The free 30-minute build call",
   intro: "Thirty minutes, on a call, screen shared. Here is exactly what happens.",
   steps: [
     {
-      icon: "smartphone",
-      label: "Your site, on a phone",
-      body: "We start with your site on a phone, on throttled mobile data, the way the person at 11:47 PM had it. You watch it load. Most owners have never seen their own site load under the conditions their customers actually use, and it is usually the most useful thirty seconds of the call.",
+      icon: "lightbulb",
+      label: "What you have in mind",
+      body: "You talk, we listen, and we write it down as you say it. Most people arrive with the shape of the thing rather than a spec, and that is the right amount to arrive with. The half hour is for turning it into something buildable.",
     },
     {
-      icon: "inbox",
-      label: "Your own contact form",
-      body: "Then we fill in your own contact form together, live, and watch what comes back. Whatever it is, we read it the way a stranger reads it.",
+      icon: "target",
+      label: "What it has to do",
+      body: "Then we get specific about the job. Who it is for, what has to happen when somebody lands on it, and what counts as it working. A site that looks right and does nothing is the most expensive thing you can buy.",
     },
     {
       icon: "search",
       label: "What the searches return",
-      body: "Then we look at what the searches for what you sell return — the ones somebody runs when they do not have your name yet, only your trade and their town — and you see who is collecting those people instead of you.",
+      body: "Then we look at what the searches for what you sell return — the ones somebody runs when they do not have your name yet, only your trade and their town — and you see who is collecting those people.",
     },
     {
       icon: "map",
-      label: "The fix, costed and dated",
-      body: "Then we map the fix. What has to change, what it costs, and the date it would go live. Real numbers and a real date, not a range.",
+      label: "The build, costed and dated",
+      body: "Then we map it. What it takes, what it costs, and the date it would go live. Real numbers and a real date, not a range.",
     },
   ],
   closer:
-    "You keep the recording and the plan whether you hire us or not. There is no pitch on this call. If your site is doing its job and the enquiries genuinely are the problem, we will tell you that, and that will be the end of it.",
+    "You keep the recording and the plan whether you hire us or not. There is no pitch on this call. If what you want does not need us, we will tell you that, and that will be the end of it.",
 } as const;
 
 /**
@@ -480,9 +494,9 @@ export const OBJECTIONS = ALL_OBJECTIONS.filter(
 );
 
 export const FINAL_CTA = {
-  heading: "Find out what your site does with an enquiry at midnight.",
+  heading: "Tell us what you want built, and what it should do at midnight.",
   subhead:
-    "Thirty minutes, live on a call, and it costs nothing. Worst case, you learn your site is fine as it is.",
+    "Thirty minutes, live on a call, and it costs nothing. You leave with a real number and a real date, whether you hire us or not.",
 } as const;
 
 /**

@@ -1,4 +1,4 @@
-import { Inbox, Map, Search, Smartphone } from "lucide-react";
+import { Lightbulb, Map, Search, Target } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Objections } from "@/components/Objections";
@@ -28,8 +28,8 @@ const FINAL_FORM_ID = "enquiry-final";
 
 /** Named in lib/content.ts so the copy file stays free of imports. */
 const OFFER_ICONS = {
-  smartphone: Smartphone,
-  inbox: Inbox,
+  lightbulb: Lightbulb,
+  target: Target,
   search: Search,
   map: Map,
 } as const;

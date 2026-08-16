@@ -84,7 +84,7 @@ export const TERMS: LegalDocument = {
     {
       heading: "What this page offers",
       paragraphs: [
-        `This page offers an automated check of your website and a free 30-minute teardown call. Both are genuinely free and there is no obligation attached to either. You keep the call recording and the written plan whether or not you go on to hire us.`,
+        `This page offers a free 30-minute build call. It is genuinely free and there is no obligation attached to it. You keep the call recording and the written plan whether or not you go on to hire us.`,
       ],
     },
     {

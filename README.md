@@ -1,6 +1,6 @@
 # QES — Websites That Answer
 
-Google Ads landing page for the free 30-minute teardown.
+Google Ads landing page for the free 30-minute build call.
 Served at `https://<your-domain>/websites-that-answer`.
 
 Single purpose: capture a lead for that call. Nothing on this page does
