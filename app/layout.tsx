@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Lato, IBM_Plex_Mono } from "next/font/google";
 import Script from "next/script";
 import { GA4_ID, ADS_CONVERSION_ID, TRACKING_ENABLED } from "@/lib/tracking";
 import { HERO, PRIMARY_DOMAIN } from "@/lib/content";
@@ -8,19 +8,20 @@ import "./globals.css";
 /**
  * next/font downloads and self-hosts these at build time — no runtime request
  * to Google, no render-blocking stylesheet, and no layout shift.
+ *
+ * Two families, not three: Lato sets both the display type and the body copy,
+ * so the page speaks in one voice. IBM Plex Mono stays because Lato has no
+ * monospace sibling and the timestamp eyebrows and audit readout need tabular
+ * figures — that is what makes the time motif read as a system.
+ *
+ * Lato ships no 500 on Google Fonts (100/300/400/700/900), which is why body
+ * text that wants emphasis uses font-bold rather than font-medium.
  */
-const sora = Sora({
+const lato = Lato({
   subsets: ["latin"],
-  weight: ["700"],
+  weight: ["400", "700"],
   display: "swap",
-  variable: "--font-sora",
-});
-
-const plexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-  variable: "--font-plex-sans",
+  variable: "--font-lato",
 });
 
 const plexMono = IBM_Plex_Mono({
@@ -92,7 +93,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sora.variable} ${plexSans.variable} ${plexMono.variable}`}
+      className={`${lato.variable} ${plexMono.variable}`}
     >
       <body>
         {children}

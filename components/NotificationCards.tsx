@@ -37,7 +37,7 @@ export function UnansweredCard({ className = "" }: { className?: string }) {
       className={`rounded-card border border-line bg-white p-5 shadow-card ${className}`}
     >
       <div className="flex items-center justify-between gap-4">
-        <span className="text-sm font-medium text-ink/65">{card.source}</span>
+        <span className="text-sm font-bold text-ink/65">{card.source}</span>
         <Stamp time={card.stamp} tone="amber" />
       </div>
 
@@ -56,7 +56,7 @@ export function UnansweredCard({ className = "" }: { className?: string }) {
           aria-hidden="true"
           className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber"
         />
-        <span className="text-sm font-medium text-amber-ink">
+        <span className="text-sm font-bold text-amber-ink">
           {card.status}
         </span>
       </div>
@@ -70,7 +70,7 @@ function AnsweredCard() {
   return (
     <div className="rounded-card border border-electric/25 bg-white p-5 shadow-card">
       <div className="flex items-center justify-between gap-4">
-        <span className="text-sm font-medium text-ink/65">{card.source}</span>
+        <span className="text-sm font-bold text-ink/65">{card.source}</span>
         <Stamp time={card.stamp} tone="electric" />
       </div>
 
@@ -84,7 +84,7 @@ function AnsweredCard() {
           aria-hidden="true"
           className="h-1.5 w-1.5 shrink-0 rounded-full bg-electric"
         />
-        <span className="text-sm font-medium text-electric">
+        <span className="text-sm font-bold text-electric">
           {card.status}
         </span>
       </div>

@@ -12,6 +12,8 @@ import sannovia from "@/public/clients/sannovia.png";
 import jcam from "@/public/clients/jcam.png";
 import nykefah from "@/public/clients/nykefah.png";
 import extreme from "@/public/clients/extreme.png";
+import powerConcepts from "@/public/clients/power-concepts.png";
+import phersonsKellan from "@/public/clients/phersons-kellan.png";
 
 /**
  * The client roster — ten clients, each in its own colours.
@@ -50,6 +52,8 @@ const ART: Record<string, StaticImageData> = {
   "Jamaica Centre for Advanced Medicine": jcam,
   "Nykefah Nairne": nykefah,
   "Shop Extreme JA on Wheels": extreme,
+  "Power Concepts": powerConcepts,
+  "Pherson's Kellan Estates": phersonsKellan,
 };
 
 /** Row height in px before each logo's optical correction. */

@@ -55,8 +55,11 @@
   --color-amber: #f5a524;
   --color-amber-ink: #9a5b00;
 
-  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Display and sans are the same family — Lato. The two tokens stay separate
+     because the markup distinguishes them, and because a display face may
+     return later; nothing has to be rewritten if it does. */
+  --font-display: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
 
   /* ----------------------------------------------------------

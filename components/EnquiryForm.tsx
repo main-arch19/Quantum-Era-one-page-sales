@@ -99,7 +99,7 @@ export function EnquiryForm({ formId }: { formId: string }) {
             <div key={name}>
               <label
                 htmlFor={inputId}
-                className="block text-sm font-medium text-navy"
+                className="block text-sm font-bold text-navy"
               >
                 {field.label}
                 {!field.required && (

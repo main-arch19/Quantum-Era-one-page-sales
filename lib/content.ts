@@ -260,7 +260,10 @@ export const TRUST_LINE: readonly ClientMark[] = [
   // lockups it reads as a stray leaf, so it gets sized to match their
   // presence rather than their height.
   { name: "Sannovia Skincare", kind: "logo", opticalScale: 1.55 },
-  { name: "Power Concepts", kind: "wordmark" },
+  // A bulb inside a painted glow, with the name set vertically beside it. The
+  // glow is most of the file's width and carries no ink, so matching it on
+  // height alone leaves the bulb itself small.
+  { name: "Power Concepts", kind: "logo", opticalScale: 1.25 },
   { name: "Jamaica Centre for Advanced Medicine", kind: "logo", opticalScale: 1.14 },
   // Fine hairlines and a very small wordmark under the monogram. Sized up so
   // the script reads as a script rather than as a grey smear.
