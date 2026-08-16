@@ -159,6 +159,25 @@ export const PROOF_READY =
   isFilled(PRIMARY_PROOF.quote.role) &&
   isFilled(PRIMARY_PROOF.quote.company);
 
+/**
+ * The proof section's eyebrow, which depends on what the section actually
+ * contains.
+ *
+ * Until PRIMARY_PROOF is filled the section is the client roster and nothing
+ * else, and "Proof" overpromises against that — it announces evidence and
+ * delivers a list of names. Once a real story with a real number sits above
+ * the logos, "Proof" is accurate and the roster becomes its supporting cast.
+ *
+ * Switching on PROOF_READY rather than hardcoding either one means filling
+ * PRIMARY_PROOF relabels the section on its own, with nothing else to
+ * remember at the point where somebody is busy writing the story.
+ *
+ * Must stay below PROOF_READY — it reads it at module scope.
+ */
+export const PROOF_EYEBROW = PROOF_READY
+  ? "Proof"
+  : "Brands we have worked with";
+
 export type SecondaryProof = {
   client: string;
   /** One line. Must contain a real number and a stated time window. */

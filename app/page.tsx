@@ -19,6 +19,7 @@ import {
   PRIMARY_PROOF,
   PROOF_READY,
   PROOF_HEADING,
+  PROOF_EYEBROW,
   SECONDARY_PROOFS,
   unfilledPlaceholders,
 } from "@/lib/content";
@@ -220,7 +221,7 @@ export default function LandingPage() {
         <section className="border-t border-line bg-white px-5 py-14 sm:px-8 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
-              <Eyebrow>Proof</Eyebrow>
+              <Eyebrow>{PROOF_EYEBROW}</Eyebrow>
             </div>
 
             {/* The story, the number and the quote are omitted entirely until
