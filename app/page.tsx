@@ -15,6 +15,7 @@ import {
   HERO,
   NARRATIVE_SECTIONS,
   MECHANISM,
+  INCLUDED,
   OFFER,
   FINAL_CTA,
   PRIMARY_PROOF,
@@ -198,8 +199,13 @@ export default function LandingPage() {
               rather than pinned to the top with a void of navy beneath them. */}
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-gutter">
             <div>
+              {/* "The fix", not "What we build" — the section below this one
+                  is the thing that enumerates what gets built, and two
+                  sections cannot share a name. This is also the more accurate
+                  label: this band is the turn from four sections of problem
+                  into the answer. */}
               <Eyebrow>
-                <span className="text-white/60">What we build</span>
+                <span className="text-white/60">The fix</span>
               </Eyebrow>
               <h2 className="display-sm mt-3 max-w-[18ch] text-h2 text-white">
                 {MECHANISM.heading}
@@ -215,6 +221,47 @@ export default function LandingPage() {
             <div>
               <NotificationExchange />
             </div>
+          </div>
+        </section>
+
+        {/* ── WHAT IS INCLUDED ──────────────────────────────────────────── */}
+        {/* Directly after the mechanism band, which argues WHY. This answers
+            the "so what do I actually get?" that the argument provokes, at the
+            moment it is provoked, rather than making the reader carry the
+            question down to the offer.
+
+            Paper, between the navy mechanism and the white proof, so the band
+            alternation survives the insertion. */}
+        <section className="border-t border-line bg-paper px-5 py-14 sm:px-8 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <SectionHeader
+              eyebrow={INCLUDED.eyebrow}
+              heading={INCLUDED.heading}
+            >
+              <p className="mt-5 text-body text-ink/70">{INCLUDED.intro}</p>
+            </SectionHeader>
+
+            {/* Two columns of four, in the same hairline-gap grid the offer
+                steps use — gap-px over a bg-line fill draws every separator
+                without eight separate borders, and it keeps the page to ONE
+                card idiom rather than two.
+
+                No icons, deliberately. Eight of them directly above the
+                offer's four would read as decoration rather than as a system:
+                the offer icons earn their place by marking a SEQUENCE, and
+                these items are a set with no order to signal. */}
+            <ul className="mt-10 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
+              {INCLUDED.items.map((item) => (
+                <li key={item.label} className="bg-white p-6 sm:p-8">
+                  <h3 className="display-sm text-lead text-navy">
+                    {item.label}
+                  </h3>
+                  <p className="mt-2 text-base leading-relaxed text-ink/70">
+                    {item.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 

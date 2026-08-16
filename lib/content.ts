@@ -290,9 +290,15 @@ export const HERO = {
  * The description is the expensive field — a free-text box in front of an
  * uncommitted visitor is the costliest thing you can ask for. It is required
  * anyway, because it is what makes the lead worth calling and it filters
- * anyone who was never going to show up. Phone is optional for the opposite
- * reason: most people fill it without prompting, so making it mandatory only
- * loses you the privacy-cautious.
+ * anyone who was never going to show up.
+ *
+ * Phone is REQUIRED too. It was optional on the reasoning that most people
+ * fill it unprompted and mandating it only loses the privacy-cautious — that
+ * trade was reversed deliberately. A page whose entire argument is that slow
+ * replies lose business cannot then collect leads it can only email. Every
+ * field here is required; the (optional) marker in EnquiryForm renders for
+ * none of them and stays only so adding an optional field later needs no
+ * component change.
  */
 export const ENQUIRY_COPY = {
   heading: "Tell us what you want built",
@@ -428,6 +434,69 @@ export const MECHANISM = {
     "And it has to look like the more serious operation. When someone is choosing between three suppliers, the one whose site looks like a real company gets the benefit of the doubt before a word is read.",
     "You already know the alternative, because it is what you have. A site that was fine when it was built, that nobody has touched in three years, quietly forwarding enquiries to an inbox and hoping somebody gets there in time. It is not that it does not work. It is that it does exactly half the job and stops at the point where the money is.",
     "We build for the ninety seconds after somebody decides. That is the whole business.",
+  ],
+} as const;
+
+/**
+ * What the client actually receives, in eight lines.
+ *
+ * This is a DELIBERATE SUBSET of what the stack can do. The full platform
+ * inventory runs to roughly ninety features across twelve categories, and
+ * publishing it would do three bad things: identify the platform we never
+ * name, convert ninety capabilities into ninety promises a client can hold us
+ * to mid-build, and bury the four lines that actually sell.
+ *
+ * The test for inclusion is narrow: does this line serve the 11:47 PM
+ * argument? "Answers in seconds", "asks the qualifying questions", "books the
+ * call" and "chases the quiet ones" ARE the argument, restated as
+ * deliverables. The rest earn their place by being things a business owner
+ * already wishes were handled.
+ *
+ * Anything the platform can do that is not here is still deliverable — it is
+ * discussed on the call, where scope is negotiated. It is simply not PROMISED
+ * on a page that has been careful about what it promises.
+ *
+ * Written as OUTCOMES, never as product names. "One inbox for everything"
+ * survives a platform migration; "Unified Inbox" is somebody else's brand and
+ * naming it here would identify the stack to anyone who has seen its deck.
+ */
+export const INCLUDED = {
+  eyebrow: "Included in every build",
+  heading: "What the site does once it is live.",
+  intro: "Not a feature list. This is the part that runs while you are asleep.",
+  items: [
+    {
+      label: "It answers in seconds",
+      body: "Every enquiry gets a real reply immediately — from the form, WhatsApp, Instagram, Facebook or Google. Not an acknowledgement. A question.",
+    },
+    {
+      label: "It asks what you would ask",
+      body: "What the job is, when they need it, what they are working with, roughly what they are prepared to spend. The questions you would ask on a call, asked while they are still on the page.",
+    },
+    {
+      label: "It books the call",
+      body: "Serious buyers go straight into your calendar with reminders attached, so the meeting they booked at midnight is one they turn up to.",
+    },
+    {
+      label: "It chases the quiet ones",
+      body: "The ones who go silent get followed up without you remembering to. Most enquiries are lost after the first reply, not before it.",
+    },
+    {
+      label: "One inbox for everything",
+      body: "WhatsApp, Instagram, Facebook, text and email land in one place, on your phone. No more checking five apps to find out who is waiting.",
+    },
+    {
+      label: "Missed calls text back",
+      body: "A call you could not take sends a text before they have redialled your competitor. This alone pays for a lot of website.",
+    },
+    {
+      label: "It asks for the review",
+      body: "Finished jobs get a review request automatically, at the moment the client is happiest, which is the only moment that works.",
+    },
+    {
+      label: "It takes the money",
+      body: "Deposits, invoices and card payments online, so a yes does not wait on a bank transfer somebody has to remember to make.",
+    },
   ],
 } as const;
 

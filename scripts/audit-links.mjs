@@ -31,6 +31,47 @@ const ALLOWED_SCRIPT_HOSTS = {
 // /booked now takes ONLY a lead id — name and email are read from the stored
 // row, not from the URL. A well-formed UUID that matches nothing is the right
 // probe: the page must render, and leak nothing, even with no lead behind it.
+/**
+ * WORDS THAT IDENTIFY THE STACK. None may reach the rendered page.
+ *
+ * The standing rule is that the platform is never named — no vendor name, no
+ * "powered by". The subtler failure is naming it WITHOUT naming it: publishing
+ * its product vocabulary. "Unified Inbox", "snapshots", "sub-accounts" and
+ * "SaaS mode" identify it on sight to anyone who has seen its agency deck, and
+ * the whole-inventory feature list this page deliberately did NOT ship is the
+ * exact edit that would reintroduce them.
+ *
+ * The page describes OUTCOMES instead — "one inbox for everything" survives a
+ * platform migration and names nobody. This check exists because that
+ * distinction lives only in a code comment otherwise, and comments do not fail
+ * builds.
+ *
+ * Word boundaries and case-sensitivity matter here: a naive /ghl/i matches
+ * "roughly", which appears in the copy three times.
+ */
+const PLATFORM_TELLS = [
+  { label: "GoHighLevel", pattern: /go\s*high\s*level/i },
+  { label: "HighLevel", pattern: /high\s*level/i },
+  { label: "GHL", pattern: /\bGHL\b/ },
+  { label: "powered by", pattern: /powered by/i },
+  { label: "sub-account", pattern: /sub-?accounts?/i },
+  { label: "snapshot", pattern: /\bsnapshots?\b/i },
+  { label: "SaaS mode", pattern: /saas mode/i },
+  { label: "rebilling", pattern: /\brebilling\b/i },
+  { label: "white-label", pattern: /white-?label/i },
+  { label: "Unified Inbox", pattern: /unified inbox/i },
+  { label: "Conversation AI", pattern: /conversation ai\b/i },
+  { label: "Voice AI", pattern: /voice ai\b/i },
+  { label: "Twilio", pattern: /\btwilio\b/i },
+  { label: "Mailgun", pattern: /\bmailgun\b/i },
+  { label: "Zapier", pattern: /\bzapier\b/i },
+  { label: "Authorize.net", pattern: /authorize\.net/i },
+  { label: "HIPAA", pattern: /\bHIPAA\b/ },
+  { label: "IVR", pattern: /\bIVR\b/ },
+  { label: "ringless voicemail", pattern: /ringless/i },
+  { label: "trigger links", pattern: /trigger links/i },
+];
+
 const AUDIT_LEAD_ID = "00000000-0000-4000-8000-000000000000";
 const ROUTES = ["/", `/booked?lid=${AUDIT_LEAD_ID}`];
 
@@ -134,6 +175,17 @@ async function auditRoute(route) {
   } else {
     for (const src of new Set(badFrames)) {
       fail(route, `LEAK — unpermitted iframe: ${src}`);
+    }
+  }
+
+  // ── platform tells ─────────────────────────────────────────────────────
+  const named = PLATFORM_TELLS.filter((tell) => tell.pattern.test(html));
+
+  if (named.length === 0) {
+    pass(`${PLATFORM_TELLS.length} platform tell(s) checked, none present`);
+  } else {
+    for (const tell of named) {
+      fail(route, `PLATFORM NAMED — "${tell.label}" appears in the HTML`);
     }
   }
 }
