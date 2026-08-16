@@ -26,9 +26,9 @@ import phersonsKellan from "@/public/clients/phersons-kellan.png";
  * deliberate trade, not an oversight.
  *
  * The bordered cell is what pays for it. With no shared ink left, the frame is
- * the only thing grouping the row — one brand per cell, and the three type
- * wordmarks sit in an identical frame so the row does not split into seven
- * pictures and three leftovers.
+ * the only thing grouping the row — one brand per cell, and the remaining type
+ * wordmark sits in an identical frame so the row does not split into pictures
+ * and leftovers.
  *
  * Three sources (Vivid Walls, Sannovia, Nykefah) ship a painted-in white
  * background rather than transparency. Those are keyed by FLOOD FILL from the
@@ -38,8 +38,8 @@ import phersonsKellan from "@/public/clients/phersons-kellan.png";
  * lettering and through Sannovia's white-filled lotus. Verified against a
  * checkerboard before shipping.
  *
- * Three clients have no mark that survives at roster size and are set in type
- * instead; see the note on TRUST_LINE in lib/content.ts for which and why.
+ * One client has no artwork on file and is set in type instead; see the note
+ * on TRUST_LINE in lib/content.ts for which and why.
  *
  * NO LINKS. Not on the images, not on the type, not around either.
  */
