@@ -240,13 +240,13 @@ export const HERO = {
  * loses you the privacy-cautious.
  */
 export const ENQUIRY_COPY = {
-  heading: "Tell us what you want built",
+  heading: "Tell us what your site is doing",
   subheading:
-    "Four questions, one minute. We read every one of these ourselves and come back with a real answer, not an auto-reply.",
-  button: "Send my enquiry",
+    "Four questions, one minute. A real person reads every one of these and comes back with a real answer, not an auto-reply.",
+  button: "Get my teardown",
   sending: "Sending…",
   consent:
-    "We'll reply by email and may follow up about your project. Unsubscribe any time.",
+    "No list, no sequence. We reply once, by email, and only about this.",
 } as const;
 
 /**
@@ -280,11 +280,11 @@ export const ENQUIRY_FIELDS = [
   },
   {
     name: "description",
-    label: "What you want built",
+    label: "What happens now",
     type: "textarea",
     autoComplete: "off",
     placeholder:
-      "A few lines is plenty — what the business does, and what you want the site to do for it.",
+      "A few lines is plenty — what the business does, and what happens when somebody fills in your form.",
     required: true,
   },
 ] as const;

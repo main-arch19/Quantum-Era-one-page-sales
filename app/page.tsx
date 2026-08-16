@@ -110,29 +110,42 @@ export default function LandingPage() {
 
       <main>
         {/* ── HERO ──────────────────────────────────────────────────────── */}
-        <section className="bg-paper px-5 pb-14 pt-12 sm:px-8 sm:pb-20 sm:pt-16">
-          {/* items-center, like the mechanism band below. The left column runs
+        <section className="bg-paper px-5 pb-14 pt-8 sm:px-8 sm:pb-20 sm:pt-16">
+          {/* Three grid children, not two, so mobile can order them
+              independently of the desktop columns.
+
+              The card used to sit inside the copy column, which meant it
+              stacked BETWEEN the subhead and the form on mobile and pushed the
+              first input to 834px. Measured against usable viewport — device
+              height minus browser chrome — that is 200px of scrolling on an
+              iPhone 14 and 341px on an SE, to reach the only action on the
+              page, on the ~5x of traffic that is mobile.
+
+              Mobile order is now copy → form → card. Desktop is unchanged:
+              lg:col-start-1 puts the card back beneath the copy in the left
+              column, and the form spans both rows on the right.
+
+              items-center, like the mechanism band below. The copy column runs
               short of the form beside it, and pinned to the top it left a
-              250px empty rectangle bottom-left — the first thing on the page,
-              reading as a column that ran out of content. */}
-          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-gutter">
-            <div>
+              250px empty rectangle bottom-left. */}
+          <div className="mx-auto grid max-w-6xl gap-7 sm:gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-gutter">
+            <div className="lg:col-start-1 lg:row-start-1">
               <h1 className="display max-w-[15ch] text-h1 text-navy">
                 {HERO.h1}
               </h1>
-              <p className="mt-5 max-w-[34rem] text-lead text-ink/75">
+              <p className="mt-4 max-w-[34rem] text-lead text-ink/75 sm:mt-5">
                 {HERO.subhead}
               </p>
-
-              {/* The signature element, cold open: one card, sitting inert. */}
-              <div className="mt-10 max-w-md">
-                <UnansweredCard />
-              </div>
             </div>
 
-            {/* On mobile the form moves below the hero copy. */}
-            <div>
+            {/* The ask. First thing after the headline on a phone. */}
+            <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
               <EnquiryForm formId="enquiry-hero" />
+            </div>
+
+            {/* The signature element, cold open: one card, sitting inert. */}
+            <div className="max-w-md lg:col-start-1 lg:row-start-2 lg:-mt-4">
+              <UnansweredCard />
             </div>
           </div>
         </section>
