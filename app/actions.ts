@@ -51,6 +51,15 @@ const enquirySchema = z.object({
     .min(1, "Please add your name so we know who we are talking to.")
     .max(100, "That name is longer than we can store — please shorten it."),
 
+  // Optional — the only field on the form that is. A business name is
+  // something a rep can fill in on the call; a phone number is not.
+  company: z
+    .string()
+    .trim()
+    .max(100, "That is longer than we can store — please shorten it.")
+    .optional()
+    .default(""),
+
   email: z
     .string()
     .trim()
@@ -81,7 +90,7 @@ const enquirySchema = z.object({
 });
 
 /**
- * The whole lead capture. One stage, four fields.
+ * The whole lead capture. One stage, five fields, of which four are required.
  *
  * Replaced a two-stage flow (audit the visitor's URL, then gate the findings
  * behind an email). The audit modules are still in the tree and still tested;
@@ -137,6 +146,7 @@ export async function submitEnquiry(
   // ── Validate ──────────────────────────────────────────────────────────────
   const parsed = enquirySchema.safeParse({
     name: formData.get("name"),
+    company: formData.get("company") ?? "",
     email: formData.get("email"),
     phone: formData.get("phone"),
     description: formData.get("description"),
@@ -155,6 +165,7 @@ export async function submitEnquiry(
 
   const lead = {
     name: parsed.data.name,
+    company: parsed.data.company?.trim() ?? "",
     email: parsed.data.email,
     phone: parsed.data.phone?.trim() ?? "",
     description: parsed.data.description,
@@ -179,6 +190,7 @@ export async function submitEnquiry(
       p_name: lead.name,
       p_email: lead.email,
       p_phone: lead.phone || null,
+      p_company: lead.company || null,
       p_project_description: lead.description,
       p_utm_source: tracking.utm_source ?? null,
       p_utm_medium: tracking.utm_medium ?? null,
@@ -246,12 +258,19 @@ export async function submitEnquiry(
 // ─────────────────────────────────────────────────────────────────────────────
 
 function buildEnquiryEmail(
-  lead: { name: string; email: string; phone: string; description: string },
+  lead: {
+    name: string;
+    company: string;
+    email: string;
+    phone: string;
+    description: string;
+  },
   tracking: Record<string, string>,
   leadId: string
 ): { subject: string; html: string; text: string } {
   const rows: [string, string][] = [
     ["Name", lead.name],
+    ["Business", lead.company || "— not given"],
     ["Email", lead.email],
     ["Phone", lead.phone || "— not given"],
   ];

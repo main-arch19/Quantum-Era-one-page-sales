@@ -335,6 +335,18 @@ export const ENQUIRY_FIELDS = [
     required: true,
   },
   {
+    name: "company",
+    label: "Business name",
+    type: "text",
+    autoComplete: "organization",
+    placeholder: "Bennett & Co",
+    // The only optional field on the form. Every extra required field costs
+    // completions on traffic we paid for, and a business name is something a
+    // rep can fill in during the call — unlike a phone number, which they
+    // cannot.
+    required: false,
+  },
+  {
     name: "email",
     label: "Work email",
     type: "email",

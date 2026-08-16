@@ -179,6 +179,15 @@ function validate(name: EnquiryFieldName, value: string): string | undefined {
     case "name":
       if (!trimmed) return "Please add your name so we know who we are talking to.";
       return undefined;
+    case "company":
+      // Optional. Only the length ceiling is enforced, and it mirrors the
+      // server schema exactly — a client validator that is stricter than the
+      // server rejects input the server would have accepted, and one that is
+      // looser costs a filled-in form at submit.
+      if (trimmed.length > 100) {
+        return "That is longer than we can store — please shorten it.";
+      }
+      return undefined;
     case "email":
       if (!trimmed) return "We need an email address to reply to.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {

@@ -6,7 +6,12 @@
  * action it belongs to.
  */
 
-export type EnquiryFieldName = "name" | "email" | "phone" | "description";
+export type EnquiryFieldName =
+  | "name"
+  | "company"
+  | "email"
+  | "phone"
+  | "description";
 
 export type EnquiryFormState = {
   ok: boolean;
