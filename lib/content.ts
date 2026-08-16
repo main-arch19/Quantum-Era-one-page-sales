@@ -224,28 +224,33 @@ export const SECONDARY_PROOFS: SecondaryProof[] = [];
  * reflexively clicked thing on a paid page, and every click on one is a lead
  * leaving.
  *
- * Seven have a mark that survives being flattened to one ink. Three do not,
- * and they are named in type instead:
+ * Nine ship as artwork. One does not:
  *
  *   Yaadflexx      an illustrated badge — Statue of Liberty, palm trees and
- *                  two lines of its own small type — which at roster size is
- *                  a dark blob.
- *   Pherson's      a blue illustrated card with the background painted in, so
- *                  one ink makes it a navy rectangle.
- *   Power Concepts a photograph of a gold bulb on black. A photo is not a
- *                  logo and cannot be made into one.
+ *                  "WHOLESALE DISTRIBUTOR" in small type under the wordmark —
+ *                  with no file in public/clients. Set in type until one
+ *                  exists.
  *
- * Setting those three in the display face rather than dropping them keeps every client
- * named and keeps the row one ink. Three images that failed to load would look
- * like a bug; three names set consistently look like a decision.
+ * Power Concepts and Pherson's were also type until their real art was found.
+ * The reasoning that put them there assumed the roster was still flattened to
+ * a single ink, and described art neither of them actually has: Power Concepts
+ * is a bulb on a painted glow, not a photo on black, and Pherson's is a blue
+ * and green skyline on white, not a painted-in card. In full colour both hold
+ * up at roster size. That note is preserved here because the conclusion it
+ * reached outlived the premise it rested on — check the file before trusting a
+ * claim about what a mark looks like.
+ *
+ * Setting the remaining one in the display face rather than dropping it keeps
+ * every client named. An image that failed to load would look like a bug; a
+ * name set deliberately looks like a decision.
  *
  * `opticalScale` is the fudge that makes a logo row read level. Sizing every
  * mark to the same pixel height does not do it — a one-line wordmark reads far
  * larger than a three-line lockup of identical height. Eyeballed against the
  * rendered row, not calculated.
  *
- * Order is deliberate: the strongest marks lead, and the three wordmarks are
- * spaced apart. Clustered at the end they would read as a leftover group.
+ * Order is deliberate: the strongest marks lead, and the wordmark sits inside
+ * the row rather than at the end, where it would read as a leftover.
  */
 export type ClientMark =
   | { name: string; kind: "logo"; opticalScale: number }
@@ -268,7 +273,10 @@ export const TRUST_LINE: readonly ClientMark[] = [
   // Fine hairlines and a very small wordmark under the monogram. Sized up so
   // the script reads as a script rather than as a grey smear.
   { name: "Nykefah Nairne", kind: "logo", opticalScale: 1.2 },
-  { name: "Pherson's Kellan Estates", kind: "wordmark" },
+  // A tall skyline lockup over two lines of wordmark. Matched on height it
+  // reads smaller than the flat marks beside it, because most of its height
+  // is illustration rather than type.
+  { name: "Pherson's Kellan Estates", kind: "logo", opticalScale: 1.3 },
   { name: "Shop Extreme JA on Wheels", kind: "logo", opticalScale: 1.2 },
 ] as const;
 
