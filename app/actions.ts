@@ -60,14 +60,14 @@ const enquirySchema = z.object({
       "That email address is missing something — check for a typo around the @ sign."
     ),
 
-  // Optional on purpose. Most people fill it without being made to, so
-  // requiring it only loses the privacy-cautious for no extra information.
+  // Required. The client validator mirrors this exactly — if the two ever
+  // disagree, the browser accepts a blank and the server bounces it, which
+  // costs a lead that was already filled in.
   phone: z
     .string()
     .trim()
-    .max(40, "That number is longer than we can store — digits only is fine.")
-    .optional()
-    .or(z.literal("")),
+    .min(1, "We need a number we can reach you on.")
+    .max(40, "That number is longer than we can store — digits only is fine."),
 
   // The qualifying field. A real answer is what makes the lead worth calling.
   description: z

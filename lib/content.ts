@@ -275,8 +275,8 @@ export const ENQUIRY_FIELDS = [
     label: "Phone / WhatsApp",
     type: "tel",
     autoComplete: "tel",
-    placeholder: "Optional",
-    required: false,
+    placeholder: "876 555 0123",
+    required: true,
   },
   {
     name: "description",

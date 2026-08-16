@@ -14,20 +14,30 @@ import nykefah from "@/public/clients/nykefah.png";
 import extreme from "@/public/clients/extreme.png";
 
 /**
- * The client roster — ten clients, one ink.
+ * The client roster — ten clients, each in its own colours.
  *
- * Every mark is flattened to Quantum Navy before it ever reaches the repo, so
- * the files on disk are already one colour: no runtime filter, no colour to
- * manage. That is not a stylistic preference. The seven sources ship seven
- * unrelated palettes — red, orange, teal, green, a blue-to-orange gradient,
- * forest green, black script — and dropped in raw they turn the one section
- * meant to read as evidence into a sticker sheet, on a page whose entire
- * colour system is two colours and a warning.
+ * Every mark ships in its real brand colours, trimmed and sized but never
+ * recoloured. That reverses an earlier decision: they were flattened to one
+ * navy ink so seven unrelated palettes would not read as a sticker sheet on a
+ * two-colour page. Showing real client marks in their real colours buys
+ * recognition and authenticity, and spends visual coherence. That is a
+ * deliberate trade, not an oversight.
  *
- * Three clients have no mark that survives that treatment and are set in type
+ * The bordered cell is what pays for it. With no shared ink left, the frame is
+ * the only thing grouping the row — one brand per cell, and the three type
+ * wordmarks sit in an identical frame so the row does not split into seven
+ * pictures and three leftovers.
+ *
+ * Three sources (Vivid Walls, Sannovia, Nykefah) ship a painted-in white
+ * background rather than transparency. Those are keyed by FLOOD FILL from the
+ * edges, never by luminance. Luminance keying was safe when the output was a
+ * flat silhouette — every surviving pixel got overwritten anyway — but on full
+ * colour it punches holes through the white counters inside Vivid Walls
+ * lettering and through Sannovia's white-filled lotus. Verified against a
+ * checkerboard before shipping.
+ *
+ * Three clients have no mark that survives at roster size and are set in type
  * instead; see the note on TRUST_LINE in lib/content.ts for which and why.
- * Both kinds carry the same ink and the same opacity so the row reads as one
- * roster rather than as images plus leftovers.
  *
  * NO LINKS. Not on the images, not on the type, not around either.
  */
@@ -55,7 +65,6 @@ const BASE_HEIGHT = 30;
  */
 export function ClientLogos({ prominent = false }: { prominent?: boolean }) {
   const base = prominent ? BASE_HEIGHT * 1.1 : BASE_HEIGHT;
-  const opacity = prominent ? "opacity-90" : "opacity-75";
 
   // One container for every mark, image and wordmark alike. Giving the boxes
   // only to the logos would split the row visually in two — seven framed
@@ -84,8 +93,12 @@ export function ClientLogos({ prominent = false }: { prominent?: boolean }) {
                 height={height}
                 // Below the fold at every width. Nothing here competes with
                 // the hero for the LCP.
+                // Full opacity. Dimming a brand colour does not read as
+                // restraint the way dimming a single ink did — it reads as
+                // faded artwork, and a client's mark shown faded is worse
+                // than not showing it at all.
                 loading="lazy"
-                className={`max-w-full object-contain ${opacity}`}
+                className="max-w-full object-contain"
               />
             </li>
           );
@@ -94,7 +107,7 @@ export function ClientLogos({ prominent = false }: { prominent?: boolean }) {
         return (
           <li key={mark.name} className={cell}>
             <span
-              className={`text-balance text-center font-display text-sm font-bold leading-tight tracking-[-0.01em] text-navy ${opacity}`}
+              className="text-balance text-center font-display text-sm font-bold leading-tight tracking-[-0.01em] text-navy"
             >
               {mark.name}
             </span>

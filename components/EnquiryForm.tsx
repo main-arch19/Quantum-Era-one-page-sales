@@ -186,7 +186,10 @@ function validate(name: EnquiryFieldName, value: string): string | undefined {
       }
       return undefined;
     case "phone":
-      // Optional. Only complain about length, never about absence.
+      if (!trimmed) return "We need a number we can reach you on.";
+      // Deliberately no format check. Jamaican, US and UK numbers all reach
+      // this form, and a regex that rejects a real number the visitor typed
+      // correctly costs more than a badly formatted one ever does.
       if (trimmed.length > 40) {
         return "That number is longer than we can store — digits only is fine.";
       }
