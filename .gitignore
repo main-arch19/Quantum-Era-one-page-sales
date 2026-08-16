@@ -8,3 +8,7 @@ dist
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+# Browser-automation session logs. Written by tooling during audits and
+# screenshots, never part of the app.
+.playwright-mcp/
