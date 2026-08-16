@@ -93,11 +93,33 @@ export const CONTACT_EMAIL = "main@quantumerasolutions.com";
 /** Actual project floor price, e.g. "US$4,500". */
 export const PRICE_FLOOR = "[FIGURE]";
 
-/** Actual typical build duration, e.g. "Four to six weeks". */
-export const BUILD_TIMEFRAME = "[TIMEFRAME]";
+/**
+ * How long the FINISHED build takes. The first draft is much faster and is
+ * stated separately wherever this appears — leading with six weeks alone
+ * throws away the strongest scheduling fact we have, and leading with one
+ * week alone would promise a finished site in seven days.
+ */
+export const BUILD_TIMEFRAME = "Six weeks";
+
+/** How long until the client is looking at a first draft. The fast number. */
+export const FIRST_DRAFT_TIMEFRAME = "one week";
 
 /** Markets actually served, e.g. "Jamaica, the wider Caribbean and the US". */
 export const MARKETS = "[MARKETS]";
+
+/**
+ * How the invoice splits across the build, e.g. "A third to start, a third at
+ * the midpoint, the balance on launch."
+ *
+ * Our own instalments, never a third-party lender. That keeps this out of
+ * consumer-credit advertising rules entirely, which is the whole reason the
+ * page says "pay in stages" rather than "financing available" — the second
+ * phrase implies a credit product and carries stated-terms obligations.
+ *
+ * Placeholder until the real split exists, so the guard below hides the
+ * objection rather than publishing half a promise.
+ */
+export const PAYMENT_TERMS = "[PAYMENT-TERMS]";
 
 /** The Calendly event link for the build call. Embedded on /booked only. */
 export const CALENDLY_URL =
@@ -213,7 +235,7 @@ export const SECONDARY_PROOFS: SecondaryProof[] = [];
  *   Power Concepts a photograph of a gold bulb on black. A photo is not a
  *                  logo and cannot be made into one.
  *
- * Setting those three in Sora rather than dropping them keeps every client
+ * Setting those three in the display face rather than dropping them keeps every client
  * named and keeps the row one ink. Three images that failed to load would look
  * like a bug; three names set consistently look like a decision.
  *
@@ -440,7 +462,7 @@ export const OFFER = {
     {
       icon: "map",
       label: "The build, costed and dated",
-      body: "Then we map it. What it takes, what it costs, and the date it would go live. Real numbers and a real date, not a range.",
+      body: "Then we map it. What it takes, what it costs, and the date it would go live. First draft inside a week. Real numbers and a real date, not a range.",
     },
   ],
   closer:
@@ -471,6 +493,18 @@ const ALL_OBJECTIONS: readonly {
     a: `Projects start at ${PRICE_FLOOR}. That is a real number, not an opening position we negotiate up from. Whether it is worth it depends entirely on what one job is worth to you, which is the arithmetic we do together on the call. If the numbers do not justify it, we will tell you, and you will have spent thirty minutes.`,
   },
   {
+    q: "Can we pay in stages?",
+    // Sits directly under the price because a payment worry is the very next
+    // thought after a number, and making somebody hunt for the answer in a
+    // different part of the page is how a solvable objection becomes an exit.
+    //
+    // Our own instalments, never a lender. "Pay in stages" rather than
+    // "financing available" is deliberate: the second phrase implies a credit
+    // product and carries stated-terms obligations we have no reason to take on.
+    requires: PAYMENT_TERMS,
+    a: `${PAYMENT_TERMS} No interest, no third party and no credit check — it is our invoice, split.`,
+  },
+  {
     // The defining objection for someone who has already paid for a site once.
     // Agree with the premise, then move the argument one step downstream.
     q: "We only had this site built two years ago.",
@@ -491,7 +525,10 @@ const ALL_OBJECTIONS: readonly {
   {
     q: "How long does a build take?",
     requires: BUILD_TIMEFRAME,
-    a: `${BUILD_TIMEFRAME}. We will give you a real date on the call, not a range.`,
+    // The draft number leads because it is the one that changes a decision.
+    // The build number follows in the same breath so nobody discovers it
+    // later and feels sold to.
+    a: `First draft in your hands within ${FIRST_DRAFT_TIMEFRAME}. The finished build is ${BUILD_TIMEFRAME.toLowerCase()}. We will give you a real date on the call, not a range.`,
   },
   {
     q: "Who actually does the work?",
@@ -511,6 +548,23 @@ const ALL_OBJECTIONS: readonly {
 export const OBJECTIONS = ALL_OBJECTIONS.filter(
   (item) => item.requires === undefined || isFilled(item.requires)
 );
+
+/**
+ * The trust badge, rendered under the client roster and beside the final CTA.
+ *
+ * Deliberately NOT a generic "100% satisfaction guaranteed" seal. A
+ * self-issued badge asserting something unverifiable is discounted instantly
+ * by the kind of buyer this page is written for, and it would be the only
+ * unfalsifiable claim on a page that has been careful not to make any.
+ *
+ * This states a promise the page ALREADY makes in the offer closer, which
+ * costs the reader nothing to test and is true the moment they book: they
+ * keep the plan whether or not they hire us.
+ */
+export const TRUST_BADGE = {
+  headline: "You keep the plan either way",
+  sub: "No pitch · no obligation",
+} as const;
 
 export const FINAL_CTA = {
   heading: "Tell us what you want built, and what it should do at midnight.",
@@ -546,11 +600,22 @@ export const NOTIFICATION_CARDS = {
 // BUILD GUARD
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Every value that must not still contain [BRACKETS] when ads run.
+ *
+ * THIS LIST IS HAND-MAINTAINED, which is its one weakness: a new placeholder
+ * added anywhere above is invisible to `npm run check:launch` until somebody
+ * remembers to register it here. PAYMENT_TERMS was added and briefly not
+ * registered, and the launch check happily reported "10 placeholders" while
+ * an eleventh sat unfilled. If you add a [BRACKET] value, add it here in the
+ * same edit.
+ */
 const REQUIRED_VALUES: Record<string, string> = {
   PRIMARY_DOMAIN,
   PRICE_FLOOR,
   BUILD_TIMEFRAME,
   MARKETS,
+  PAYMENT_TERMS,
   CALENDLY_URL,
   "PRIMARY_PROOF.client": PRIMARY_PROOF.client,
   "PRIMARY_PROOF.story": PRIMARY_PROOF.story,

@@ -6,6 +6,7 @@ import { EnquiryForm } from "@/components/EnquiryForm";
 import { StickyBar } from "@/components/StickyBar";
 import { ScrollToFormButton } from "@/components/ScrollToFormButton";
 import { ClientLogos } from "@/components/ClientLogos";
+import { TrustBadge } from "@/components/TrustBadge";
 import {
   UnansweredCard,
   NotificationExchange,
@@ -99,7 +100,7 @@ export default function LandingPage() {
 
       {unfilled.length > 0 && (
         <div className="border-b-2 border-amber bg-amber/15 px-5 py-3 text-center sm:px-8">
-          <p className="text-sm font-medium text-amber-ink">
+          <p className="text-sm font-bold text-amber-ink">
             ⚠ {unfilled.length} placeholder{unfilled.length === 1 ? "" : "s"}{" "}
             unfilled — this page must not run against paid traffic yet.
           </p>
@@ -280,6 +281,13 @@ export default function LandingPage() {
             >
               <ClientLogos prominent={!PROOF_READY} />
             </div>
+
+            {/* Under the roster, not above it. A trust signal confirms a claim
+                rather than announcing one — the logos say "real clients", and
+                this says what working with us guarantees. */}
+            <div className="mt-8 flex justify-center">
+              <TrustBadge />
+            </div>
           </div>
         </section>
 
@@ -358,6 +366,12 @@ export default function LandingPage() {
               <p className="mt-5 max-w-[32rem] text-lead text-white/70">
                 {FINAL_CTA.subhead}
               </p>
+
+              {/* The last thing before the decision. Friction is highest here,
+                  which is where a guarantee is worth the most. */}
+              <div className="mt-7">
+                <TrustBadge tone="dark" />
+              </div>
             </div>
 
             {/* The second form is the same component, not a dark variant of
