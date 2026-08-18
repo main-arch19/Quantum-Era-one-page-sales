@@ -14,12 +14,12 @@
  *      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
  *        --headless --disable-gpu --remote-debugging-port=9222 \
  *        --user-data-dir=/tmp/qes-audit about:blank &
- *   3. AUDIT_BASE=http://localhost:3000/websites-that-answer npm run audit:runtime
+ *   3. AUDIT_BASE=http://localhost:3000 npm run audit:runtime
  */
 
 const PORT = process.env.CDP_PORT ?? 9222;
 const BASE =
-  process.env.AUDIT_BASE ?? "http://localhost:3000/websites-that-answer";
+  process.env.AUDIT_BASE ?? "http://localhost:3000";
 const SETTLE_MS = Number(process.env.SETTLE_MS ?? 7000);
 
 /**

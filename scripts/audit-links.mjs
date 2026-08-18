@@ -16,11 +16,11 @@
  *   npm run dev
  *   npm run audit:links
  *
- * Override the base with AUDIT_BASE=https://yourdomain.com/websites-that-answer
+ * Override the base with AUDIT_BASE=https://yourdomain.com
  */
 
 const BASE =
-  process.env.AUDIT_BASE ?? "http://localhost:3000/websites-that-answer";
+  process.env.AUDIT_BASE ?? "http://localhost:3000";
 
 /** Scripts permitted to reach a third-party host, and where. */
 const ALLOWED_SCRIPT_HOSTS = {
