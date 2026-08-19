@@ -171,8 +171,16 @@ function SubmitButton() {
 /**
  * Client-side mirror of the server rules. The server is the authority — this
  * only exists so the correction arrives on blur instead of after a round trip.
+ *
+ * Exported and shared with the discount modal, whose three fields are a subset
+ * of these five. The messages must match the Zod schema in app/actions.ts
+ * word for word, and keeping ONE copy is the only way that stays true — the
+ * discount schema reuses the same strings server-side for the same reason.
  */
-function validate(name: EnquiryFieldName, value: string): string | undefined {
+export function validate(
+  name: EnquiryFieldName,
+  value: string
+): string | undefined {
   const trimmed = value.trim();
 
   switch (name) {
@@ -211,8 +219,14 @@ function validate(name: EnquiryFieldName, value: string): string | undefined {
   }
 }
 
-/** Hidden from people, irresistible to bots. */
-function Honeypot({ formId }: { formId: string }) {
+/**
+ * Hidden from people, irresistible to bots.
+ *
+ * Exported because the discount modal posts to a different action but faces
+ * exactly the same bots. Two copies of a spam gate is two places to fix when
+ * one of them stops working.
+ */
+export function Honeypot({ formId }: { formId: string }) {
   return (
     <div
       aria-hidden="true"

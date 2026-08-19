@@ -4,6 +4,7 @@ import { BookedTracking } from "@/components/BookedTracking";
 import { CalendlyEmbed } from "@/components/CalendlyEmbed";
 import { getSupabase } from "@/lib/supabase";
 import { CALENDLY_URL, COMPANY, CONTACT_EMAIL } from "@/lib/content";
+import { DISCOUNT_CODE, DISCOUNT_PERCENT, DISCOUNT_TERMS } from "@/lib/discount";
 import logo from "@/public/qes-logo.png";
 
 export const metadata: Metadata = {
@@ -29,6 +30,11 @@ export default async function BookedPage({
   const params = await searchParams;
   const leadId = typeof params.lid === "string" ? params.lid : "";
 
+  // Set by submitDiscountClaim. The two paths share this page deliberately —
+  // a claimer has already given us three of the five things the form asks
+  // for, and the calendar is the one thing still worth asking of them.
+  const claimed = params.claim === "1";
+
   const lead = await loadLead(leadId);
   const firstName = (lead?.name ?? "").trim().split(/\s+/)[0] ?? "";
 
@@ -36,7 +42,10 @@ export default async function BookedPage({
 
   return (
     <>
-      <BookedTracking leadId={leadId} />
+      <BookedTracking
+        leadId={leadId}
+        variant={claimed ? "discount" : "enquiry"}
+      />
 
       <header className="border-b border-line bg-paper">
         <div className="mx-auto flex max-w-4xl items-center px-5 py-4 sm:px-8">
@@ -61,6 +70,27 @@ export default async function BookedPage({
           Your enquiry is with us and a real person is reading it, not a filter.
           We will come back to you by email either way.
         </p>
+
+        {/* The code, in the two places it can be: on screen now, and in the
+            email we just sent. Either one alone is a promise they cannot
+            check later. The terms sit with it for the same reason. */}
+        {claimed && (
+          <div className="mt-10 rounded-card border border-line bg-paper p-5 sm:p-6">
+            <p className="eyebrow text-electric/70">
+              {DISCOUNT_PERCENT}% off setup · claimed
+            </p>
+            <p className="mt-3 font-mono text-h2 font-bold tracking-[0.04em] text-navy">
+              {DISCOUNT_CODE}
+            </p>
+            <p className="mt-3 max-w-[38rem] text-base text-ink/75">
+              {DISCOUNT_TERMS}
+            </p>
+            <p className="mt-2 max-w-[38rem] text-base text-ink/75">
+              We have emailed this to you as well, so you do not have to keep
+              this page open.
+            </p>
+          </div>
+        )}
 
         <div className="mt-14 border-t border-line pt-10">
           <p className="eyebrow text-electric/70">30 minutes · No cost</p>

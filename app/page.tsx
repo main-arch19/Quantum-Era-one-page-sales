@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Objections } from "@/components/Objections";
 import { EnquiryForm } from "@/components/EnquiryForm";
 import { StickyBar } from "@/components/StickyBar";
+import { ExitOffer } from "@/components/ExitOffer";
 import { ScrollToFormButton } from "@/components/ScrollToFormButton";
 import { ClientLogos } from "@/components/ClientLogos";
 import { TrustBadge } from "@/components/TrustBadge";
@@ -435,6 +436,9 @@ export default function LandingPage() {
       <Footer />
 
       <StickyBar targetId={FINAL_FORM_ID} />
+
+      {/* Last chance. Renders nothing until the visitor looks like leaving. */}
+      <ExitOffer />
     </>
   );
 }

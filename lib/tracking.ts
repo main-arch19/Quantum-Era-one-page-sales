@@ -102,6 +102,31 @@ export function trackCallBooked(): void {
   gtag("event", "call_booked", { event_category: "lead" });
 }
 
+/**
+ * The exit offer appeared. Not a conversion — the denominator for one.
+ *
+ * Worth having on its own because the two numbers fail differently. A low
+ * shown-count means the trigger is not detecting exits; a healthy shown-count
+ * with few claims means the offer itself is not worth three fields. Only the
+ * pair tells you which.
+ */
+export function trackExitOfferShown(): void {
+  gtag("event", "exit_offer_shown", { event_category: "engagement" });
+}
+
+/**
+ * The exit offer was claimed. Fired at submit, not on /booked.
+ *
+ * Unlike the main form this one does not wait for the redirect: the claim
+ * shares /booked with ordinary enquiries, and BookedTracking already fires the
+ * conversion pair there. This event exists to separate the two populations in
+ * GA4 — a discount claim has no phone number and is a weaker lead than a full
+ * enquiry, and reporting that cannot tell them apart will overstate both.
+ */
+export function trackDiscountClaim(): void {
+  gtag("event", "discount_claim", { event_category: "lead" });
+}
+
 /** UTM/click params carried through to the lead email, so you can see which keyword paid off. */
 export const TRACKED_PARAMS = [
   "utm_source",

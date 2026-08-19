@@ -75,3 +75,32 @@ alter table public.leads add column if not exists phone text;
 -- before this change have no description, and a not-null column would refuse
 -- to be added to a table that already has rows.
 alter table public.leads add column if not exists project_description text;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- MIGRATION — the exit offer.
+--
+-- A visitor who is leaving without submitting gets one modal offering 10% off
+-- setup for three fields. That writes an ordinary lead row through the same
+-- insert_lead_with_activity RPC, then tags it with these two columns in a
+-- second statement — the RPC's signature is owned by the QESCRM repo and is
+-- not widened from here.
+--
+-- Idempotent: safe to run more than once.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- NOT NULL with a default is safe on an existing table: every prior row is a
+-- full enquiry, which is exactly what false means. Querying "who claimed a
+-- discount" then never has to reason about nulls.
+alter table public.leads
+  add column if not exists discount_claimed boolean not null default false;
+
+-- The code as issued, not as a boolean. If the offer is ever re-run at a
+-- different rate, rows written under the old one must still say which deal
+-- they were actually promised — that is the number we have to honour.
+alter table public.leads add column if not exists discount_code text;
+
+-- The list somebody has to work: claimed the discount, never booked a call.
+-- Partial for the same reason leads_unbooked_idx is — it stays small.
+create index if not exists leads_discount_unbooked_idx
+  on public.leads (created_at desc)
+  where discount_claimed and booked_at is null;
