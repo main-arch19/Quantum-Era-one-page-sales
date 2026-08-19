@@ -31,6 +31,27 @@ function collectTrackingParams(formData: FormData): Record<string, string> {
   return params;
 }
 
+/**
+ * Environment variable, or the fallback — treating blank as absent.
+ *
+ * `process.env.X ?? fallback` looks like it does this and does not. `??` only
+ * fires on undefined, so a variable that EXISTS but is empty yields "" and
+ * skips the fallback entirely.
+ *
+ * That is not hypothetical. A blank LEAD_TO_EMAIL handed Resend `to: ""` and
+ * every notification failed with "Invalid `to` field" while the Vercel
+ * dashboard looked correctly filled in — the row was there, so the fallback
+ * never ran. Deleting the row fixed it and blanking it would not have, which
+ * is a distinction nobody should have to know at 3am.
+ *
+ * Trimming matters for the same reason: a value pasted with a trailing space
+ * or newline is invisible in a dashboard field and rejected by the API.
+ */
+function envOr(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : fallback;
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -215,8 +236,11 @@ export async function submitEnquiry(
   // ── Deliver ───────────────────────────────────────────────────────────────
   const message = buildEnquiryEmail(lead, tracking, leadId);
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.LEAD_TO_EMAIL ?? COMPANY.email;
-  const from = process.env.LEAD_FROM_EMAIL ?? "leads@quantumerasolutions.com";
+  const to = envOr(process.env.LEAD_TO_EMAIL, COMPANY.email);
+  // quantumera.tech, because that is the domain verified in Resend. The old
+  // default named quantumerasolutions.com, which Resend refuses to send from —
+  // a fallback that failed in exactly the case it existed to cover.
+  const from = envOr(process.env.LEAD_FROM_EMAIL, "leads@quantumera.tech");
 
   if (!apiKey) {
     // No key configured (local dev). Log rather than lose the lead, and let
